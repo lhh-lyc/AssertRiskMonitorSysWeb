@@ -1,85 +1,80 @@
 import axios from 'axios'
-import { MessageBox, Message } from 'element-ui'
-import store from '@/store'
-import { getToken } from '@/utils/auth'
+import Cookies from 'js-cookie'
+import router from '@/router'
+import qs from 'qs'
+import { clearLoginInfo } from '@/utils'
+import isPlainObject from 'lodash/isPlainObject'
+import {commonkey} from "@/utils/common";
 
-// create an axios instance
-const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+const http = axios.create({
+  baseURL: window.SITE_CONFIG['apiURL'],
+  timeout: 1000 * 180,
+  withCredentials: true
 })
 
-// request interceptor
-service.interceptors.request.use(
-  config => {
-    // do something before request is sent
-
-    if (store.getters.token) {
-      // let each request carry token
-      // ['X-Token'] is a custom headers key
-      // please modify it according to the actual situation
-      config.headers['X-Token'] = getToken()
+/**
+ * 请求拦截
+ */
+http.interceptors.request.use(config => {
+  config.headers['Accept-Language'] = Cookies.get('language') || 'zh-CN'
+  config.headers['token'] = Cookies.get('token') || ''
+  config.headers['Authorization'] = Cookies.get('token') || ''
+  config.headers['encUserId'] = sessionStorage.getItem(commonkey.adminEncUserIdKey) || ''
+  config.headers['Content-Type'] = 'application/json;charset=UTF-8'
+  // 默认参数
+  var defaults = {}
+  // 防止缓存，GET请求默认带_t参数
+  if (config.method === 'get') {
+    config.params = {
+      ...config.params,
+      ...{ '_t': new Date().getTime() }
     }
-    return config
-  },
-  error => {
-    // do something with request error
-    console.log(error) // for debug
-    return Promise.reject(error)
   }
-)
-
-// response interceptor
-service.interceptors.response.use(
-  /**
-   * If you want to get http information such as headers or status
-   * Please return  response => response
-  */
-
-  /**
-   * Determine the request status by custom code
-   * Here is just an example
-   * You can also judge the status by HTTP Status Code
-   */
-  response => {
-    const res = response.data
-
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
-      Message({
-        message: res.message || 'Error',
-        type: 'error',
-        duration: 5 * 1000
-      })
-
-      // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        // to re-login
-        MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-          confirmButtonText: 'Re-Login',
-          cancelButtonText: 'Cancel',
-          type: 'warning'
-        }).then(() => {
-          store.dispatch('user/resetToken').then(() => {
-            location.reload()
-          })
-        })
-      }
-      return Promise.reject(new Error(res.message || 'Error'))
-    } else {
-      return res
+  if (isPlainObject(config.params)) {
+    config.params = {
+      ...defaults,
+      ...config.params
     }
-  },
-  error => {
-    console.log('err' + error) // for debug
-    Message({
-      message: error.message,
-      type: 'error',
-      duration: 5 * 1000
-    })
-    return Promise.reject(error)
   }
-)
+  if (isPlainObject(config.data)) {
+    config.data = {
+      ...defaults,
+      ...config.data
+    }
+    if (/^application\/x-www-form-urlencoded/.test(config.headers['content-type'])) {
+      config.data = qs.stringify(config.data)
+    }
+  }
 
-export default service
+  // headers中配置serialize为true开启序列化
+  if (config.method === 'post' && config.headers.serialize) {
+    config.data = serialize(config.data)
+    delete JSON.stringify(config.data)
+  }
+
+  if (config.method === 'get') {
+    config.paramsSerializer = function(params) {
+      return qs.stringify(params, { arrayFormat: 'repeat' })
+    }
+  }
+  return config
+}, error => {
+  return Promise.reject(error)
+})
+
+/**
+ * 响应拦截
+ */
+http.interceptors.response.use(response => {
+  if (response.data.code === 401 || response.data.code === 10001) {
+    clearLoginInfo()
+    router.replace({ name: 'login' })
+    return Promise.reject(response.data.msg)
+  }
+  return response
+}, error => {
+  console.error(error)
+  return Promise.reject(error)
+})
+
+export default http

@@ -166,7 +166,8 @@ export default {
               if (res.code != 200) {
                 return this.$message.error(res.msg);
               }
-              Cookies.set("token", res.data.access_token);
+              Cookies.set("access_token", res.data.access_token);
+              Cookies.set("refresh_token", res.data.refresh_token);
               var token = res.data.access_token;
               if (token != null) {
                 sessionStorage.setItem(commonkey.adminTokenKey, token);

@@ -19,6 +19,10 @@
               placeholder="请选择"
           >
             <el-option
+                label="全部"
+                value=""
+            ></el-option>
+            <el-option
                 label="扫描中"
                 value="0"
             ></el-option>
@@ -48,57 +52,119 @@
       <div v-if="dataList.length == 0" style="height: 590px;display: flex;justify-content: center;align-items: center;">
         <span style="color: #9f9d9d;font-size: xxx-large;">暂无数据</span>
       </div>
-      <div v-if="dataList.length != 0" style="height: 590px;">
-      <el-row v-for="(item, index) in dataList" :key="item.id" v-if="index%2==0" >
-        <el-col :span="12">
-          <div class="grid-content project-col" @click="getProjectInfo(item.id)">
-            <div class="p-name">
-              <span>{{ item.name }}</span>
-              <i style="float: right;" class="el-icon-delete" @click.stop="deleteHandle(item.id)"></i>
-              <i style="float: right;" class="el-icon-edit" @click.stop="addOrUpdateHandle(item.id)"></i>
+      <div v-if="dataList.length != 0" style="height: 590px;overflow: hidden;overflow-y: auto;">
+        <el-row v-for="(item, index) in dataList" :key="item.id" v-if="index%2==0">
+          <el-col :span="12">
+            <div class="grid-content project-col" @click="getProjectInfo(item.id)">
+              <div class="p-name">
+                <span>{{ item.name }}</span>
+                <i style="float: right;" class="el-icon-delete" @click.stop="deleteHandle(item.id)"></i>
+                <i style="float: right;" class="el-icon-edit" @click.stop="addOrUpdateHandle(item.id)"></i>
+              </div>
+              <div class="p-desc">
+                <el-row :gutter="20">
+                  <el-col :span="4" v-if="item.isCompleted == 0">
+                    <div class="desc-header" style="color: green">扫描中</div>
+                  </el-col>
+                  <el-col :span="4" v-if="item.isCompleted == 1">
+                    <div class="desc-header" style="color: blue">扫描完成</div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-header">资产总数</div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-header">已扫描资产</div>
+                  </el-col>
+                  <el-col :span="8">
+                    <div class="desc-header">创建时间</div>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                  <el-col :span="4">
+                    <div class="desc-content">
+                      <Icon name="Mouse-alt" class="scanning"/>
+                    </div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-content">{{ item.portNum }}</div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-content">{{ item.portNum }}</div>
+                  </el-col>
+                  <el-col :span="8">
+                    <div class="desc-content">{{ item.createTime }}</div>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                  <el-col :span="4">
+                    <div class="desc-header">高危<span style="color: #ff5454">&nbsp;&nbsp;0</span></div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-header">中危<span style="color: #cfb100">&nbsp;&nbsp;0</span></div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-header">低危<span style="color: #c0bcbc">&nbsp;&nbsp;0</span></div>
+                  </el-col>
+                </el-row>
+              </div>
             </div>
-            <div class="p-desc">
-              <el-row :gutter="20">
-                <el-col :span="4" v-if="item.isCompleted == 0"><div class="desc-header" style="color: green">扫描中</div></el-col>
-                <el-col :span="4" v-if="item.isCompleted == 1"><div class="desc-header" style="color: blue">扫描完成</div></el-col>
-                <el-col :span="4"><div class="desc-header">域名总数</div></el-col>
-                <el-col :span="4"><div class="desc-header">已扫描端口</div></el-col>
-                <el-col :span="8"><div class="desc-header">创建时间</div></el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="4"><div class="desc-content"><Icon name="Mouse-alt" class="scanning" /></div></el-col>
-                <el-col :span="4"><div class="desc-content">10</div></el-col>
-                <el-col :span="4"><div class="desc-content">{{ item.portNum }}</div></el-col>
-                <el-col :span="8"><div class="desc-content">{{ item.createTime }}</div></el-col>
-              </el-row>
+          </el-col>
+          <el-col :span="12" v-if="index+1 < dataList.length">
+            <div class="grid-content project-col">
+              <div class="p-name">
+                <span>{{ dataList[index + 1].name }}</span>
+                <i style="float: right;" class="el-icon-delete" @click.stop="deleteHandle(dataList[index + 1].id)"></i>
+                <i style="float: right;" class="el-icon-edit" @click.stop="addOrUpdateHandle(dataList[index + 1].id)"></i>
+              </div>
+              <div class="p-desc">
+                <el-row :gutter="20">
+                  <el-col :span="4" v-if="dataList[index+1].isCompleted == 0">
+                    <div class="desc-header" style="color: green">扫描中</div>
+                  </el-col>
+                  <el-col :span="4" v-if="dataList[index+1].isCompleted == 1">
+                    <div class="desc-header" style="color: blue">扫描完成</div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-header">资产总数</div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-header">已扫描资产</div>
+                  </el-col>
+                  <el-col :span="8">
+                    <div class="desc-header">创建时间</div>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                  <el-col :span="4">
+                    <div class="desc-content">
+                      <Icon name="Mouse-alt" class="scanning"/>
+                    </div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-content">{{ dataList[index + 1].portNum }}</div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-content">{{ dataList[index + 1].portNum }}</div>
+                  </el-col>
+                  <el-col :span="8">
+                    <div class="desc-content">{{ dataList[index + 1].createTime }}</div>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="20">
+                  <el-col :span="4">
+                    <div class="desc-header">高危<span style="color: #ff5454">&nbsp;&nbsp;0</span></div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-header">中危<span style="color: #cfb100">&nbsp;&nbsp;0</span></div>
+                  </el-col>
+                  <el-col :span="4">
+                    <div class="desc-header">低危<span style="color: #c0bcbc">&nbsp;&nbsp;0</span></div>
+                  </el-col>
+                </el-row>
+              </div>
             </div>
-          </div>
-        </el-col>
-        <el-col :span="12" v-if="index+1 < dataList.length">
-          <div class="grid-content project-col">
-            <div class="p-name">
-              <span>{{ dataList[index+1].name }}</span>
-              <i style="float: right;" class="el-icon-delete" @click.stop="deleteHandle(item.id)"></i>
-              <i style="float: right;" class="el-icon-edit" @click.stop="addOrUpdateHandle(item.id)"></i>
-            </div>
-            <div class="p-desc">
-              <el-row :gutter="20">
-                <el-col :span="4" v-if="dataList[index+1].isCompleted == 0"><div class="desc-header" style="color: green">扫描中</div></el-col>
-                <el-col :span="4" v-if="dataList[index+1].isCompleted == 1"><div class="desc-header" style="color: blue">扫描完成</div></el-col>
-                <el-col :span="4"><div class="desc-header">域名总数</div></el-col>
-                <el-col :span="4"><div class="desc-header">已扫描端口</div></el-col>
-                <el-col :span="8"><div class="desc-header">创建时间</div></el-col>
-              </el-row>
-              <el-row :gutter="20">
-                <el-col :span="4"><div class="desc-content"><Icon name="Mouse-alt" class="scanning" /></div></el-col>
-                <el-col :span="4"><div class="desc-content">10</div></el-col>
-                <el-col :span="4"><div class="desc-content">{{ dataList[index+1].portNum }}</div></el-col>
-                <el-col :span="8"><div class="desc-content">{{ dataList[index+1].createTime }}</div></el-col>
-              </el-row>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
+          </el-col>
+        </el-row>
       </div>
       <el-pagination
           :current-page="page"
@@ -123,7 +189,6 @@
 <script>
 import AddOrUpdate from "./project-add-or-update";
 import {addDynamicRoute} from "@/router";
-import {commonkey} from "@/utils/common.js";
 
 export default {
   data() {
@@ -131,7 +196,6 @@ export default {
       // 默认属性
       dataForm: {
         unitId: "",
-        unitCode: "",
         name: "",
         isCompleted: ''
       }, // 查询条件
@@ -139,36 +203,26 @@ export default {
       order: "", // 排序，asc／desc
       orderField: "", // 排序，字段
       page: 1, // 当前页码
-      limit: 8, // 每页数
+      limit: 10, // 每页数
       total: 0, // 总条数
       dataListLoading: false, // 数据列表，loading状态
       dataListSelections: [], // 数据列表，多选项
       addOrUpdateVisible: false, // 新增／更新，弹窗visible状态
-      options: [], // 企业名称列表
-      showFiles: false, // 是否显示附件弹框页
     };
   },
   components: {
     AddOrUpdate,
   },
-  created() {
-    this.getUnits(); // 获取企业名称列表信息
-  },
   mounted() {
-    let isPark = sessionStorage.getItem(commonkey.isParkKey);
-    if (isPark == 0) {
-      this.dataForm.unitId = sessionStorage.getItem(commonkey.unitIdKey) * 1;
-    } else {
-      this.dataForm.unitId = "";
-    }
-    this.getDataList();
+    let that = this;
+    that.getDataList();
+    setInterval(function () {
+      that.getDataList();
+    },10000);
   },
   methods: {
     getProjectInfo(id) {
       alert("project info:" + id)
-    },
-    // 点击企业名称
-    clickName(unitId) {
     },
     // 子级
     childHandle(row) {
@@ -183,19 +237,6 @@ export default {
       };
       // 动态路由
       addDynamicRoute(routeParams, this.$router);
-    },
-    // 获取企业名称列表信息
-    getUnits() {
-      this.$http
-          .get(`/cm/unit/queryList`)
-          .then(({data: res}) => {
-            if (res.code != 200) {
-              return this.$message.error(res.msg);
-            }
-            this.options = res.data || [];
-          })
-          .catch(() => {
-          });
     },
     // 获取列表信息
     query() {
@@ -330,6 +371,7 @@ export default {
     },
   },
 };
+
 </script>
 <style lang="scss" scoped>
 .unitname {
@@ -360,15 +402,21 @@ export default {
 
 .project-col {
   //height: 70px;
-  margin: 10px;
-  cursor:pointer;
+  margin: 14px;
+  cursor: pointer;
   box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.1);
+  background-image: linear-gradient(to right bottom, rgb(248 253 255), #edf4ff);
 }
 
 .p-name {
   padding: 10px;
   font-size: 24px;
   font-weight: 600;
+  margin-left: 15px;
+}
+
+.p-desc {
+  margin-left: 10px;
 }
 
 .desc-header {
@@ -380,6 +428,11 @@ export default {
 .desc-content {
   padding: 10px;
   font-size: 14px;
+}
+
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+  width: 0px;
 }
 
 </style>

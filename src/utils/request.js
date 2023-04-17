@@ -4,7 +4,7 @@ import router from '@/router'
 import qs from 'qs'
 import { clearLoginInfo } from '@/utils'
 import isPlainObject from 'lodash/isPlainObject'
-import {commonkey} from "@/utils/common";
+import {commonkey, isBlank} from "@/utils/common";
 
 const http = axios.create({
   baseURL: window.SITE_CONFIG['apiURL'],
@@ -17,8 +17,8 @@ const http = axios.create({
  */
 http.interceptors.request.use(config => {
   config.headers['Accept-Language'] = Cookies.get('language') || 'zh-CN'
-  config.headers['token'] = Cookies.get('token') || ''
-  config.headers['Authorization'] = Cookies.get('token') || ''
+  config.headers['refresh_token'] = Cookies.get('refresh_token') || ''
+  config.headers['Authorization'] = Cookies.get('access_token') || ''
   config.headers['encUserId'] = sessionStorage.getItem(commonkey.adminEncUserIdKey) || ''
   config.headers['Content-Type'] = 'application/json;charset=UTF-8'
   // 默认参数
@@ -70,6 +70,12 @@ http.interceptors.response.use(response => {
     clearLoginInfo()
     router.replace({ name: 'login' })
     return Promise.reject(response.data.msg)
+  }
+  if (!isBlank(response.headers.access_token)) {
+    Cookies.set("access_token", response.headers.access_token);
+  }
+  if (!isBlank(response.headers.refresh_token)) {
+    Cookies.set("refresh_token", response.headers.refresh_token);
   }
   return response
 }, error => {

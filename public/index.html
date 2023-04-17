@@ -40,7 +40,7 @@
   <!-- 集成测试环境 -->
   <% if (process.env.VUE_APP_NODE_ENV === 'prod:sit') { %>
     <script>
-        window.SITE_CONFIG['apiURL'] = 'http://121.36.23.220:7094';
+        window.SITE_CONFIG['apiURL'] = 'http://49.235.104.19:10002/admin/';
       window.SITE_CONFIG['fileURL'] = 'http://121.36.23.220/hbgjarchivefile/';
     </script>
   <% } %>
@@ -54,7 +54,7 @@
   <!-- 生产环境 -->
   <% if (process.env.VUE_APP_NODE_ENV === 'prod') { %>
     <script>
-      window.SITE_CONFIG['apiURL'] = 'http://121.36.23.220:7094';
+      window.SITE_CONFIG['apiURL'] = 'http://49.235.104.19:10002/admin/';
       window.SITE_CONFIG['fileURL'] = 'http://121.36.23.220/hbgjfile/';
     </script>
   <% } %>

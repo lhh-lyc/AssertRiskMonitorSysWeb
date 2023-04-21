@@ -6,13 +6,13 @@
           <div class="big-box">
             <div class="title-font">已发现</div>
             <div class="box-row">
-              <div class="box" v-for="item in topBoxes.slice(0, 4)" :key="item.id">
+              <div class="box" v-for="item in topBoxes.slice(0, 4)" :key="item.id" @click="showList(item.type)">
                 <div class="box-title">{{ item.title }}</div>
                 <div class="box-icon">{{ item.num }}</div>
               </div>
             </div>
             <div class="box-row">
-              <div class="box" v-for="item in topBoxes.slice(4, 8)" :key="item.id">
+              <div class="box" v-for="item in topBoxes.slice(4, 8)" :key="item.id" @click="showList(item.type)">
                 <div class="box-title">{{ item.title }}</div>
                 <div class="box-icon">{{ item.num }}</div>
               </div>
@@ -23,13 +23,13 @@
           <div class="big-box-right">
             <div class="title-font">待执行</div>
             <div class="box-row">
-              <div class="box-right" v-for="item in topBoxes.slice(8, 9)" :key="item.id">
+              <div class="box-right" v-for="item in topBoxes.slice(10, 11)" :key="item.id">
                 <div class="box-title">{{ item.title }}</div>
                 <div class="box-icon">{{ item.num }}</div>
               </div>
             </div>
             <div class="box-row">
-              <div class="box-right" v-for="item in topBoxes.slice(9, 10)" :key="item.id">
+              <div class="box-right" v-for="item in topBoxes.slice(11, 12)" :key="item.id">
                 <div class="box-title">{{ item.title }}</div>
                 <div class="box-icon">{{ item.num }}</div>
               </div>
@@ -75,6 +75,12 @@
         </el-col>
       </el-row>
     </div>
+    <!-- 弹窗, 新增 / 修改 -->
+    <add-or-update
+        v-if="addOrUpdateVisible"
+        ref="addOrUpdate"
+        @refreshDataList="getHomeNum"
+    ></add-or-update>
   </div>
 </template>
 
@@ -83,12 +89,14 @@ import {
   getHomeNum,
   recordClick
 } from "@/api/home";
+import AddOrUpdate from "./home-comyany-list";
 import {
   formatYMD,
 } from "@/api/common";
 import * as echarts from 'echarts';
 import {commonkey} from "@/utils/common";
 import {assign} from "lodash";
+import request from '@/utils/request'
 
 export default {
   data() {
@@ -97,44 +105,14 @@ export default {
       topBoxes: [],
       recordType: 1,
       reverse: true,
-      recordList: [{
-        projectName: '1111',
-        content: '活动按期开始',
-        timestamp: '2018-04-15'
-      }, {
-        projectName: '1111',
-        content: '通过审核',
-        timestamp: '2018-04-13'
-      }, {
-        projectName: '1111',
-        content: '创建成功',
-        timestamp: '2018-04-11'
-      }, {
-        projectName: '1111',
-        content: '创建成功',
-        timestamp: '2018-04-11'
-      }, {
-        projectName: '1111',
-        content: '创建成功',
-        timestamp: '2018-04-11'
-      }, {
-        projectName: '1111',
-        content: '创建成功',
-        timestamp: '2018-04-11'
-      }, {
-        projectName: '1111',
-        content: '创建成功',
-        timestamp: '2018-04-11'
-      }, {
-        projectName: '1111',
-        content: '创建成功',
-        timestamp: '2018-04-11'
-      }]
+      recordList: [],
+      addOrUpdateVisible: false, // 弹窗visible状态
     }
   },
+  components: {
+    AddOrUpdate,
+  },
   mounted() {
-    // 初始化图表
-    this.initChart()
     this.getHomeNum()
     this.recordClick()
   },
@@ -146,9 +124,22 @@ export default {
           return this.$message.error(res.msg);
         }
         res.data.forEach(function (item) {
-          that.topBoxes.push({title: item.title, num: item.num});
+          that.topBoxes.push(item);
         })
+        // 初始化图表
+        this.initChart()
       });
+    },
+    showList(type) {
+      let typeList = [2,3,4,5,6,7];
+      if (typeList.indexOf(type) != -1) {
+        this.addOrUpdateVisible = true;
+        this.$nextTick(() => {
+          this.$refs.addOrUpdate.page = 1;
+          this.$refs.addOrUpdate.dataForm.type = type;
+          this.$refs.addOrUpdate.init();
+        });
+      }
     },
     recordClick() {
       let endTime = formatYMD(new Date());
@@ -167,7 +158,7 @@ export default {
     initChart() {
       // 使用第三方图表库进行图表绘制
       // 例如：echarts
-
+      let that = this;
       let chart = echarts.init(this.$refs.chart)
 
       // 设置图表配置项
@@ -178,8 +169,8 @@ export default {
         },
         legend: {
           data: [
-            '已扫描端口',
-            '未扫描端口',
+            '已扫描IP',
+            '未扫描IP',
             '已扫描域名',
             '未扫描域名',
           ]
@@ -198,8 +189,8 @@ export default {
               show: false
             },
             data: [
-              { value: 64, name: '已扫描端口' },
-              { value: 28, name: '未扫描端口', selected: true }
+              { value: JSON.stringify(that.topBoxes[9].num), name: '已扫描IP' },
+              { value: JSON.stringify(that.topBoxes[11].num), name: '未扫描IP', selected: true }
             ]
           },
           {
@@ -242,8 +233,8 @@ export default {
               }
             },
             data: [
-              { value: 26, name: '已扫描域名' },
-              { value: 24, name: '未扫描域名' },
+              { value: JSON.stringify(that.topBoxes[8].num), name: '已扫描域名' },
+              { value: JSON.stringify(that.topBoxes[10].num), name: '未扫描域名' },
             ]
           }
         ]

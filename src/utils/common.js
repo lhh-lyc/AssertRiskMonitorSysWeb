@@ -4,6 +4,7 @@
 const commonkey = {
 	adminTokenKey: "admin_token",
 	adminUserIdKey: "admin_userId",
+	isAdminKey: "is_admin",
 	adminEncUserIdKey: "admin_encUserId",
 	adminUserNamekey: "admin_userName",
 	adminUnitNamekey: "admin_unitName",

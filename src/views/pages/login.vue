@@ -173,6 +173,7 @@ export default {
                 sessionStorage.setItem(commonkey.adminTokenKey, token);
               }
               sessionStorage.setItem(commonkey.adminUserIdKey, res.data.userId);
+              sessionStorage.setItem(commonkey.isAdminKey, res.data.isAdmin);
               sessionStorage.setItem(commonkey.adminEncUserIdKey, res.data.encUserId);
               sessionStorage.setItem(
                 commonkey.adminUserNamekey,

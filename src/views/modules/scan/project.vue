@@ -40,7 +40,6 @@
         </el-form-item>
         <el-form-item>
           <el-button
-              v-if="$hasPermission('cm:unit:save')"
               type="primary"
               icon="el-icon-plus"
               @click="addOrUpdateHandle()"
@@ -55,7 +54,7 @@
       <div v-if="dataList.length != 0" style="height: 590px;overflow: hidden;overflow-y: auto;">
         <el-row v-for="(item, index) in dataList" :key="item.id" v-if="index%2==0">
           <el-col :span="12">
-            <div class="grid-content project-col" @click="getProjectInfo(item.id)">
+            <div class="grid-content project-col">
               <div class="p-name">
                 <span>{{ item.name }}</span>
                 <i style="float: right;" class="el-icon-delete" @click.stop="deleteHandle(item.id)"></i>
@@ -114,7 +113,8 @@
               <div class="p-name">
                 <span>{{ dataList[index + 1].name }}</span>
                 <i style="float: right;" class="el-icon-delete" @click.stop="deleteHandle(dataList[index + 1].id)"></i>
-                <i style="float: right;" class="el-icon-edit" @click.stop="addOrUpdateHandle(dataList[index + 1].id)"></i>
+                <i style="float: right;" class="el-icon-edit"
+                   @click.stop="addOrUpdateHandle(dataList[index + 1].id)"></i>
               </div>
               <div class="p-desc">
                 <el-row :gutter="20">
@@ -152,6 +152,8 @@
                 </el-row>
                 <el-row :gutter="20">
                   <el-col :span="4">
+                    <el-col :span="4">
+                    </el-col>
                     <div class="desc-header">高危<span style="color: #ff5454">&nbsp;&nbsp;0</span></div>
                   </el-col>
                   <el-col :span="4">
@@ -189,6 +191,10 @@
 <script>
 import AddOrUpdate from "./project-add-or-update";
 import {addDynamicRoute} from "@/router";
+import {assign} from "_lodash@4.17.21@lodash";
+import {
+  page
+} from "@/api/scan/project";
 
 export default {
   data() {
@@ -217,13 +223,10 @@ export default {
     let that = this;
     that.getDataList();
     setInterval(function () {
-      that.getDataList();
-    },10000);
+      that.query();
+    }, 10000);
   },
   methods: {
-    getProjectInfo(id) {
-      alert("project info:" + id)
-    },
     // 子级
     childHandle(row) {
       // 路由参数
@@ -240,21 +243,20 @@ export default {
     },
     // 获取列表信息
     query() {
-      this.$http
-          .get(
-              `/scan/project/page?page=${this.page}&limit=${this.limit}&name=${this.dataForm.name}&isCompleted=${this.dataForm.isCompleted}`
-          )
-          .then(({data: res}) => {
-            if (res.code != 200) {
-              this.dataList = [];
-              this.total = 0;
-              return this.$message.error(res.msg);
-            }
-            this.dataList = res.data.records || [];
-            this.total = res.data.total || 0;
-          })
-          .catch(() => {
-          });
+      page(assign({
+        page: this.page,
+        limit: this.limit,
+        name: this.dataForm.name,
+        isCompleted: this.dataForm.isCompleted
+      })).then(({data: res}) => {
+        if (res.code != 200) {
+          this.dataList = [];
+          this.total = 0;
+          return this.$message.error(res.msg);
+        }
+        this.dataList = res.data.records || [];
+        this.total = res.data.total || 0;
+      }).catch(() => {});
     },
     // 多选
     dataListSelectionChangeHandle(val) {

@@ -20,6 +20,7 @@ http.interceptors.request.use(config => {
   config.headers['refresh_token'] = Cookies.get('refresh_token') || ''
   config.headers['Authorization'] = Cookies.get('access_token') || ''
   config.headers['encUserId'] = sessionStorage.getItem(commonkey.adminEncUserIdKey) || ''
+  config.headers['isAdmin'] = sessionStorage.getItem(commonkey.isAdminKey) || 0
   config.headers['Content-Type'] = 'application/json;charset=UTF-8'
   // 默认参数
   var defaults = {}
@@ -66,9 +67,9 @@ http.interceptors.request.use(config => {
  * 响应拦截
  */
 http.interceptors.response.use(response => {
-  if (response.data.code === 401 || response.data.code === 10001) {
-    clearLoginInfo()
-    router.replace({ name: 'login' })
+  if (response.data.code == 500) {
+    // clearLoginInfo()
+    // router.replace({ name: 'login' })
     return Promise.reject(response.data.msg)
   }
   if (!isBlank(response.headers.access_token)) {

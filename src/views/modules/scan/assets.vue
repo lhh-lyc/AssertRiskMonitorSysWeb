@@ -2,225 +2,247 @@
   <el-card shadow="never" class="aui-card--fill">
     <div class="mod-sys__dict">
       <el-form
-        :inline="true"
-        :model="dataForm"
-        @keyup.enter.native="getDataList()"
+          label-width="67px"
+          :inline="true"
+          :model="dataForm"
+          @keyup.enter.native="getDataList()"
       >
-        <el-form-item label="公司">
-          <el-input
-              v-model="dataForm.unitCode"
-              placeholder="公司"
-              clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="主域名">
-          <el-input
-              v-model="dataForm.unitCode"
-              placeholder="主域名"
-              clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="子域名">
-          <el-input
-              v-model="dataForm.unitCode"
-              placeholder="子域名"
-              clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="IP">
-          <el-input
-              v-model="dataForm.unitCode"
-              placeholder="IP"
-              clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="端口">
-          <el-input
-              v-model="dataForm.unitCode"
-              placeholder="端口"
-              clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button icon="el-icon-search" @click="getDataList()">{{
-            $t("query")
-          }}</el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            v-if="$hasPermission('cm:unit:save')"
-            type="primary"
-            icon="el-icon-plus"
-            @click="addOrUpdateHandle()"
-            >{{ $t("add") }}</el-button
-          >
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            v-if="$hasPermission('cm:unit:delete')"
-            type="primary"
-            icon="el-icon-delete"
-            @click="deleteHandleAll()"
-            >{{ $t("deleteBatch") }}</el-button
-          >
-        </el-form-item>
+        <el-row>
+          <el-form-item label="公司">
+            <el-input
+                v-model="q.company"
+                placeholder="公司"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="主域名">
+            <el-input
+                v-model="q.parentDomain"
+                placeholder="主域名"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="子域名">
+            <el-input
+                v-model="q.domain"
+                placeholder="子域名"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item style="margin-left: 66px;">
+            <el-button icon="el-icon-search" @click="getDataList()">{{
+                $t("query")
+              }}
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button icon="el-icon-sort" @click="moreQuery()">{{
+                $t("moreQuery")
+              }}
+            </el-button>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+                v-if="$hasPermission('cm:unit:save')"
+                id="upFlle"
+                type="primary"
+                icon="el-icon-upload2"
+                @click="uploadModule()"
+            >{{ $t("uploadModule") }}
+            </el-button
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button
+                v-if="$hasPermission('cm:unit:save')"
+                type="primary"
+                icon="el-icon-download"
+                @click="downLoadModule()"
+            >{{ $t("downLoadModule") }}
+            </el-button
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button
+                type="primary"
+                icon="el-icon-download"
+                @click="exportFile()"
+            >{{ $t("export") }}
+            </el-button
+            >
+          </el-form-item>
+        </el-row>
+        <el-row v-if="moreQueryFlag">
+          <el-form-item label="IP">
+            <el-input
+                v-model="q.ip"
+                placeholder="IP"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="端口">
+            <el-input
+                v-model="q.port"
+                placeholder="端口"
+                clearable
+            ></el-input>
+          </el-form-item>
         <el-form-item label="服务">
           <el-input
-              v-model="dataForm.unitCode"
+              v-model="q.server"
               placeholder="服务"
               clearable
           ></el-input>
         </el-form-item>
         <el-form-item label="URL">
           <el-input
-              v-model="dataForm.unitCode"
+              v-model="q.url"
               placeholder="URL"
               clearable
           ></el-input>
         </el-form-item>
         <el-form-item label="cms">
           <el-input
-              v-model="dataForm.unitCode"
+              v-model="q.cms"
               placeholder="cms"
               clearable
           ></el-input>
         </el-form-item>
+        </el-row>
+        <el-row v-if="moreQueryFlag">
         <el-form-item label="Title">
           <el-input
-              v-model="dataForm.unitCode"
+              v-model="q.title"
               placeholder="Title"
               clearable
           ></el-input>
         </el-form-item>
         <el-form-item label="ip归属地">
           <el-input
-              v-model="dataForm.unitCode"
+              v-model="q.address"
               placeholder="ip归属地"
               clearable
           ></el-input>
         </el-form-item>
+        </el-row>
       </el-form>
       <el-table
-        v-loading="dataListLoading"
-        :data="dataList"
-        border
-        @selection-change="dataListSelectionChangeHandle"
-        style="width: 100%"
+          v-loading="dataListLoading"
+          :data="dataList"
+          border
+          @selection-change="dataListSelectionChangeHandle"
+          style="width: 100%"
       >
-        <el-table-column
-          type="selection"
-          header-align="center"
-          align="center"
-          width="50px"
-        ></el-table-column>
         <el-table-column label="序号" align="center" width="70px">
           <template slot-scope="scop">
-            {{scop.$index+1}}
+            {{ limit*(page-1) + scop.$index + 1 }}
           </template>
         </el-table-column>
         <el-table-column
-          prop="name"
-          label="公司"
-          header-align="center"
-          align="center"
-          width="250"
+            prop="company"
+            label="公司"
+            header-align="center"
+            align="center"
+            width="250"
         >
         </el-table-column>
         <el-table-column
-          prop="unitCode"
-          label="主域名"
-          header-align="center"
-          align="center"
+            prop="parentDomain"
+            label="主域名"
+            header-align="center"
+            align="center"
         >
         </el-table-column>
         <el-table-column
-          prop="industry"
-          label="子域名"
-          header-align="center"
-          align="center"
+            prop="domain"
+            label="子域名"
+            header-align="center"
+            align="center"
         ></el-table-column>
         <el-table-column
-          prop="address"
-          label="IP"
-          header-align="center"
-          align="center"
+            prop="ip"
+            label="IP"
+            header-align="center"
+            align="center"
         ></el-table-column>
         <el-table-column
-          prop="socialCreditCode"
-          label="端口"
-          header-align="center"
-          align="center"
+            prop="port"
+            label="端口"
+            header-align="center"
+            align="center"
         ></el-table-column>
         <el-table-column
-          prop="legalRepresentative"
-          label="服务"
-          header-align="center"
-          align="center"
+            prop="server"
+            label="服务"
+            header-align="center"
+            align="center"
         ></el-table-column>
         <el-table-column
-          prop="statutoryContact"
-          label="URL"
-          header-align="center"
-          align="center"
+            prop="url"
+            label="URL"
+            header-align="center"
+            align="center"
         ></el-table-column>
         <el-table-column
-          prop="headOfEnvironment"
-          label="cms"
-          header-align="center"
-          align="center"
+            prop="cms"
+            label="cms"
+            header-align="center"
+            align="center"
         ></el-table-column>
         <el-table-column
-          prop="headOfEnvironmentPhone"
-          label="Title"
-          header-align="center"
-          align="center"
+            prop="title"
+            label="Title"
+            header-align="center"
+            align="center"
         ></el-table-column>
         <el-table-column
-          prop="fileCount"
-          label="IP归属地"
-          header-align="center"
-          align="center"
+            prop="address"
+            label="IP归属地"
+            header-align="center"
+            align="center"
         ></el-table-column>
         <el-table-column
-          :label="$t('handle')"
-          fixed="right"
-          header-align="center"
-          align="center"
-          width="150"
+            :label="$t('handle')"
+            fixed="right"
+            header-align="center"
+            align="center"
+            width="150"
         >
           <template slot-scope="scope">
+<!--            <el-button
+                v-if="$hasPermission('cm:unit:update')"
+                type="text"
+                size="small"
+                @click="addOrUpdateHandle(scope.row.unitId)"
+            >{{ $t("update") }}
+            </el-button
+            >-->
             <el-button
-              v-if="$hasPermission('cm:unit:update')"
-              type="text"
-              size="small"
-              @click="addOrUpdateHandle(scope.row.unitId)"
-              >{{ $t("update") }}</el-button
-            >
-            <el-button
-              v-if="$hasPermission('cm:unit:delete')"
-              type="text"
-              size="small"
-              @click="deleteHandle(scope.row.unitId)"
-              >{{ $t("delete") }}</el-button
+                v-if="$hasPermission('cm:unit:delete')"
+                type="text"
+                size="small"
+                @click="deleteHandle(scope.row)"
+            >{{ $t("delete") }}
+            </el-button
             >
           </template>
         </el-table-column>
       </el-table>
       <el-pagination
-        :current-page="page"
-        :page-sizes="[10, 20, 50, 100]"
-        :page-size="limit"
-        :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="pageSizeChangeHandle"
-        @current-change="pageCurrentChangeHandle"
+          :current-page="page"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="limit"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @size-change="pageSizeChangeHandle"
+          @current-change="pageCurrentChangeHandle"
       >
       </el-pagination>
       <!-- 弹窗, 新增 / 修改 -->
       <add-or-update
-        v-if="addOrUpdateVisible"
-        ref="addOrUpdate"
-        @refreshDataList="getDataList"
+          v-if="addOrUpdateVisible"
+          ref="addOrUpdate"
+          @refreshDataList="getDataList"
       ></add-or-update>
     </div>
   </el-card>
@@ -228,12 +250,30 @@
 
 <script>
 import AddOrUpdate from "./assets-add-or-update";
-import { addDynamicRoute } from "@/router";
-import { commonkey } from "@/utils/common.js";
+import {addDynamicRoute} from "@/router";
+import {
+  page,exportFile,del
+} from "@/api/scan/port";
+import {assign} from "_lodash@4.17.21@lodash";
+import {isBlank} from "@/utils/common";
 export default {
   data() {
     return {
       // 默认属性
+      q: {
+        company: '',
+        parentDomain: '',
+        domain: '',
+        ip: '',
+        port: '',
+        server: '',
+        url: '',
+        cms: '',
+        title: '',
+        address: '',
+      },
+      queryType: '',
+      moreQueryFlag: false,
       dataForm: {
         unitId: "",
         unitCode: "",
@@ -255,15 +295,27 @@ export default {
     AddOrUpdate,
   },
   created() {
-    this.getUnits(); // 获取企业名称列表信息
+    this.queryType = this.$route.params.type
+    let tagValue = this.$route.params.tagValue
+    if (!isBlank(this.queryType)) {
+      if (this.queryType == 2) {
+        this.q.company = tagValue;
+      }
+      if (this.queryType == 3) {
+        this.q.parentDomain = tagValue;
+      }
+      if (this.queryType == 4) {
+        this.q.domain = tagValue;
+      }
+      if (this.queryType == 5) {
+        this.q.ip = tagValue;
+      }
+      if (this.queryType == 6) {
+        this.q.port = tagValue;
+      }
+    }
   },
   mounted() {
-    let isPark = sessionStorage.getItem(commonkey.isParkKey);
-    if (isPark == 0) {
-      this.dataForm.unitId = sessionStorage.getItem(commonkey.unitIdKey) * 1;
-    } else {
-      this.dataForm.unitId = "";
-    }
     this.getDataList();
   },
   methods: {
@@ -287,34 +339,108 @@ export default {
       // 动态路由
       addDynamicRoute(routeParams, this.$router);
     },
-    // 获取企业名称列表信息
-    getUnits() {
-      this.$http
-        .get(`/cm/unit/queryList`)
-        .then(({ data: res }) => {
-          if (res.code != 200) {
-            return this.$message.error(res.msg);
-          }
-          this.options = res.data || [];
-        })
-        .catch(() => {});
-    },
     // 获取列表信息
     query() {
-      this.$http
-        .get(
-          `/cm/unit/list?page=${this.page}&limit=${this.limit}&unitId=${this.dataForm.unitId}&unitCode=${this.dataForm.unitCode}`
+      page(assign({
+        page: this.page,
+        limit: this.limit,
+        company: this.q.company,
+        parentDomain: this.q.parentDomain,
+        domain: this.q.domain,
+        ip: this.q.ip,
+        port: this.q.port,
+        server: this.q.server,
+        url: this.q.url,
+        cms: this.q.cms,
+        title: this.q.title,
+        address: this.q.address,
+      })).then(({data: res}) => {
+        if (res.code != 200) {
+          this.dataList = [];
+          this.total = 0;
+          return this.$message.error(res.msg);
+        }
+        this.dataList = res.data.records || [];
+        this.total = res.data.total || 0;
+      }).catch(() => {
+      });
+    },
+    moreQuery: function () {
+      this.moreQueryFlag = !this.moreQueryFlag;
+    },
+    exportFile: function () {
+      exportFile(assign({
+        page: this.page,
+        limit: this.limit,
+        company: this.q.company,
+        parentDomain: this.q.parentDomain,
+        domain: this.q.domain,
+        ip: this.q.ip,
+        port: this.q.port,
+        server: this.q.server,
+        url: this.q.url,
+        cms: this.q.cms,
+        title: this.q.title,
+        address: this.q.address,
+        filename: '用户资产'
+      })).then(({data: res}) => {
+        const objectUrl = URL.createObjectURL(
+            new Blob([res.data], {
+              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            })
         )
-        .then(({ data: res }) => {
-          if (res.code != 200) {
-            this.dataList = [];
-            this.total = 0;
-            return this.$message.error(res.msg);
-          }
-          this.dataList = res.data.records || [];
-          this.total = res.data.total || 0;
-        })
-        .catch(() => {});
+        const link = document.createElement('a')
+        // 设置导出的文件名称
+        link.download = `用户资产` + '.xlsx'
+        link.style.display = 'none'
+        link.href = objectUrl
+        link.click()
+        document.body.appendChild(link)
+      }).catch(() => {});
+    },
+    downLoadModule() {
+      let file = "../../../static/module.xls";
+      let domA = document.createElement('a'); // js创建a标签
+      domA.setAttribute('download', ''); // 给a标签设置download属性
+      domA.setAttribute('href', file); // 给a标签href属性赋值为要下载文件的路径
+      domA.click(); // 点击下载
+    },
+    uploadModule(){
+      const _this = this;
+      const fileType = ['xls','xlsx']
+      const inputFile = document.createElement("input")
+      inputFile.type = "file"
+      inputFile.style.display = "none"
+      document.body.appendChild(inputFile)
+      inputFile.click()
+      inputFile.addEventListener("change",function() {
+        const file = inputFile.files[0];
+        var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+        if (!fileType.includes(testmsg)) {
+          _this.$message.warning("上传的文件格式只能是,xls,xlsx");
+          document.body.removeChild(inputFile);
+          return false;
+        }
+        const formData = new FormData();
+        formData.append("file", file);
+        _this.$http
+            .post("scan/export/upload", formData, {emulateJSON: true})
+            .then(({data: res}) => {
+              if (res.code != 200) {
+                return _this.$message.error(res.msg);
+              }
+              _this.$message({
+                message: _this.$t("prompt.success"),
+                type: "success",
+                duration: 500,
+                onClose: () => {
+                  _this.getDataList();
+                },
+              });
+            })
+            .catch(() => {
+            });
+      })
     },
     // 多选
     dataListSelectionChangeHandle(val) {
@@ -344,42 +470,38 @@ export default {
       });
     },
     // 删除
-    deleteHandle(id) {
-      if (!id && this.dataListSelections.length <= 0) {
-        return this.$message({
-          message: this.$t("prompt.deleteBatch"),
-          type: "warning",
-          duration: 500,
-        });
-      }
+    deleteHandle(row) {
       this.$confirm(
-        this.$t("prompt.info", { handle: this.$t("delete") }),
-        this.$t("prompt.title"),
-        {
-          confirmButtonText: this.$t("confirm"),
-          cancelButtonText: this.$t("cancel"),
-          type: "warning",
+          this.$t("prompt.info", {handle: this.$t("delete")}),
+          this.$t("prompt.title"),
+          {
+            confirmButtonText: this.$t("confirm"),
+            cancelButtonText: this.$t("cancel"),
+            type: "warning",
+          }
+      ).then(() => {
+        if (row.ip && row.port) {
+          let param = {
+            ip: row.ip,
+            port: row.port
+          }
+          del(Object.assign(param)).then(({data: res}) => {
+            if (res.code != 200) {
+              return this.$message.error(res.msg);
+            }
+            this.$message({
+              message: this.$t("prompt.success"),
+              type: "success",
+              duration: 500,
+              onClose: () => {
+                this.getDataList();
+              },
+            });
+          }).catch(() => {
+          });
         }
-      )
-        .then(() => {
-          this.$http
-            .post("/cm/unit/delete", [id], { emulateJSON: true })
-            .then(({ data: res }) => {
-              if (res.code != 200) {
-                return this.$message.error(res.msg);
-              }
-              this.$message({
-                message: this.$t("prompt.success"),
-                type: "success",
-                duration: 500,
-                onClose: () => {
-                  this.getDataList();
-                },
-              });
-            })
-            .catch(() => {});
-        })
-        .catch(() => {});
+      })
+
     },
     // 删除多个  deleteHandleAll
     deleteHandleAll() {
@@ -397,33 +519,35 @@ export default {
         }
       });
       this.$confirm(
-        this.$t("prompt.info", { handle: this.$t("delete") }),
-        this.$t("prompt.title"),
-        {
-          confirmButtonText: this.$t("confirm"),
-          cancelButtonText: this.$t("cancel"),
-          type: "warning",
-        }
+          this.$t("prompt.info", {handle: this.$t("delete")}),
+          this.$t("prompt.title"),
+          {
+            confirmButtonText: this.$t("confirm"),
+            cancelButtonText: this.$t("cancel"),
+            type: "warning",
+          }
       )
-        .then(() => {
-          this.$http
-            .post("/cm/unit/delete", arr, { emulateJSON: true })
-            .then(({ data: res }) => {
-              if (res.code != 200) {
-                return this.$message.error(res.msg);
-              }
-              this.$message({
-                message: this.$t("prompt.success"),
-                type: "success",
-                duration: 500,
-                onClose: () => {
-                  this.getDataList();
-                },
-              });
-            })
-            .catch(() => {});
-        })
-        .catch(() => {});
+          .then(() => {
+            this.$http
+                .post("/cm/unit/delete", arr, {emulateJSON: true})
+                .then(({data: res}) => {
+                  if (res.code != 200) {
+                    return this.$message.error(res.msg);
+                  }
+                  this.$message({
+                    message: this.$t("prompt.success"),
+                    type: "success",
+                    duration: 500,
+                    onClose: () => {
+                      this.getDataList();
+                    },
+                  });
+                })
+                .catch(() => {
+                });
+          })
+          .catch(() => {
+          });
     },
   },
 };
@@ -432,6 +556,10 @@ export default {
 .unitname {
   color: #189f92;
   cursor: pointer;
+}
+
+.el-input {
+  width: 200px;
 }
 
 </style>

@@ -69,6 +69,9 @@ export default {
   },
   methods: {
     init() {
+      if (this.dataForm.type == 1) {
+        this.tagName = '项目';
+      }
       if (this.dataForm.type == 2) {
         this.tagName = '企业';
       }

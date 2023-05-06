@@ -7,3 +7,11 @@ export function page(query) {
         params: query,
     });
 }
+
+export function projectList(query) {
+    return request({
+        url: "/scan/project/list",
+        method: "get",
+        params: query,
+    });
+}

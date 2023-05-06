@@ -54,7 +54,7 @@
       <div v-if="dataList.length != 0" style="height: 590px;overflow: hidden;overflow-y: auto;">
         <el-row v-for="(item, index) in dataList" :key="item.id" v-if="index%2==0">
           <el-col :span="12">
-            <div class="grid-content project-col">
+            <div class="grid-content project-col" @click="showPointList(item.id)">
               <div class="p-name">
                 <span>{{ item.name }}</span>
                 <i style="float: right;" class="el-icon-delete" @click.stop="deleteHandle(item.id)"></i>
@@ -109,7 +109,7 @@
             </div>
           </el-col>
           <el-col :span="12" v-if="index+1 < dataList.length">
-            <div class="grid-content project-col">
+            <div class="grid-content project-col" @click="showPointList(item.id)">
               <div class="p-name">
                 <span>{{ dataList[index + 1].name }}</span>
                 <i style="float: right;" class="el-icon-delete" @click.stop="deleteHandle(dataList[index + 1].id)"></i>
@@ -257,6 +257,12 @@ export default {
         this.dataList = res.data.records || [];
         this.total = res.data.total || 0;
       }).catch(() => {});
+    },
+    showPointList(projectId) {
+      this.$router.replace({
+        name: "scan-assets",
+        params: {type: 1, tagValue: projectId}
+      });
     },
     // 多选
     dataListSelectionChangeHandle(val) {

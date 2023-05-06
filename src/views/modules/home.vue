@@ -131,7 +131,7 @@ export default {
       });
     },
     showList(type) {
-      let typeList = [2,3,4,5,6,7];
+      let typeList = [1,2,3,4,5,6,7];
       if (typeList.indexOf(type) != -1) {
         this.addOrUpdateVisible = true;
         this.$nextTick(() => {

@@ -8,6 +8,16 @@
           @keyup.enter.native="getDataList()"
       >
         <el-row>
+          <el-form-item prop="roleIdList" label="项目" class="role-list">
+            <el-select v-model="q.projectId" filterable placeholder="请选择" clearable>
+              <el-option
+                  v-for="item in projectList"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="公司">
             <el-input
                 v-model="q.company"
@@ -29,7 +39,7 @@
                 clearable
             ></el-input>
           </el-form-item>
-          <el-form-item style="margin-left: 66px;">
+          <el-form-item style="margin-left: 54px;">
             <el-button icon="el-icon-search" @click="getDataList()">{{
                 $t("query")
               }}
@@ -44,21 +54,21 @@
           <el-form-item>
             <el-button
                 v-if="$hasPermission('cm:unit:save')"
-                id="upFlle"
                 type="primary"
-                icon="el-icon-upload2"
-                @click="uploadModule()"
-            >{{ $t("uploadModule") }}
+                icon="el-icon-download"
+                @click="downLoadModule()"
+            >{{ $t("downLoadModule") }}
             </el-button
             >
           </el-form-item>
           <el-form-item>
             <el-button
                 v-if="$hasPermission('cm:unit:save')"
+                id="upFlle"
                 type="primary"
-                icon="el-icon-download"
-                @click="downLoadModule()"
-            >{{ $t("downLoadModule") }}
+                icon="el-icon-upload2"
+                @click="uploadModule()"
+            >{{ $t("uploadModule") }}
             </el-button
             >
           </el-form-item>
@@ -172,7 +182,7 @@
             align="center"
         ></el-table-column>
         <el-table-column
-            prop="server"
+            prop="serverName"
             label="服务"
             header-align="center"
             align="center"
@@ -254,6 +264,9 @@ import {addDynamicRoute} from "@/router";
 import {
   page,exportFile,del
 } from "@/api/scan/port";
+import {
+  projectList
+} from "@/api/scan/project";
 import {assign} from "_lodash@4.17.21@lodash";
 import {isBlank} from "@/utils/common";
 export default {
@@ -261,6 +274,7 @@ export default {
     return {
       // 默认属性
       q: {
+        projectId: '',
         company: '',
         parentDomain: '',
         domain: '',
@@ -279,6 +293,7 @@ export default {
         unitCode: "",
       }, // 查询条件
       dataList: [], // 数据列表
+      projectList: [],
       order: "", // 排序，asc／desc
       orderField: "", // 排序，字段
       page: 1, // 当前页码
@@ -298,6 +313,9 @@ export default {
     this.queryType = this.$route.params.type
     let tagValue = this.$route.params.tagValue
     if (!isBlank(this.queryType)) {
+      if (this.queryType == 1) {
+        this.q.projectId = tagValue;
+      }
       if (this.queryType == 2) {
         this.q.company = tagValue;
       }
@@ -317,6 +335,7 @@ export default {
   },
   mounted() {
     this.getDataList();
+    this.getProjectList();
   },
   methods: {
     // 点击企业名称
@@ -344,6 +363,7 @@ export default {
       page(assign({
         page: this.page,
         limit: this.limit,
+        projectId: this.q.projectId,
         company: this.q.company,
         parentDomain: this.q.parentDomain,
         domain: this.q.domain,
@@ -362,6 +382,17 @@ export default {
         }
         this.dataList = res.data.records || [];
         this.total = res.data.total || 0;
+      }).catch(() => {
+      });
+    },
+    // 获取列表信息
+    getProjectList() {
+      projectList(assign({})).then(({data: res}) => {
+        if (res.code != 200) {
+          this.projectList = [];
+          return this.$message.error(res.msg);
+        }
+        this.projectList = res.data || [];
       }).catch(() => {
       });
     },

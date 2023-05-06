@@ -10,14 +10,13 @@
         :model="dataForm"
         :rules="dataRule"
         ref="dataForm"
-        @keyup.enter.native="dataFormSubmitHandle()"
         label-width="100px"
     >
       <el-form-item prop="name" label="项目名称">
         <el-input v-model="dataForm.name" placeholder="项目名称" maxlength="100"></el-input>
       </el-form-item>
       <el-form-item prop="hosts" label="扫描域名">
-        <textarea style="width: 560px;height: 100px" v-model="dataForm.hosts" placeholder="输入域名"></textarea>
+        <textarea style="width: 560px;height: 100px" v-model="dataForm.hosts" placeholder="输入域名，多域名请换行输入"></textarea>
       </el-form-item>
 <!--      <el-form-item prop="subDomainFlag" label="子域名收集">-->
 <!--        <el-checkbox v-model="dataForm.subDomainFlag" :true-label="1" :false-label="0">子域名收集</el-checkbox>-->

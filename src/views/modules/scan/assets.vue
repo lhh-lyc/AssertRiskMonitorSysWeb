@@ -314,7 +314,7 @@ export default {
     let tagValue = this.$route.params.tagValue
     if (!isBlank(this.queryType)) {
       if (this.queryType == 1) {
-        this.q.projectId = tagValue;
+        this.q.projectId = parseInt(tagValue);
       }
       if (this.queryType == 2) {
         this.q.company = tagValue;
@@ -329,7 +329,9 @@ export default {
         this.q.ip = tagValue;
       }
       if (this.queryType == 6) {
-        this.q.port = tagValue;
+        let arr = tagValue.split(":");
+        this.q.ip = arr[0];
+        this.q.port = arr[1];
       }
     }
   },

@@ -136,6 +136,7 @@ export default {
         this.addOrUpdateVisible = true;
         this.$nextTick(() => {
           this.$refs.addOrUpdate.page = 1;
+          this.$refs.addOrUpdate.limit = 10;
           this.$refs.addOrUpdate.dataForm.type = type;
           this.$refs.addOrUpdate.init();
         });

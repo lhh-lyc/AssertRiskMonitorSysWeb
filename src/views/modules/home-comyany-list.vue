@@ -13,17 +13,17 @@
       >
         <el-table-column label="序号" align="center" width="70px">
           <template slot-scope="scop">
-            {{ scop.$index + 1 }}
+            {{limit*(page-1) + scop.$index + 1 }}
           </template>
         </el-table-column>
         <el-table-column
-            prop="tagValue"
+            prop="tag"
             :label="tagName"
             header-align="center"
             align="center"
         >
           <template slot-scope="scope">
-            <div @click="showPointList(scope.row.tagValue)" style="cursor: pointer;">{{ scope.row.tagValue }}</div>
+            <div @click="showPointList(scope.row.tagValue)" style="cursor: pointer;">{{ scope.row.tag }}</div>
           </template>
         </el-table-column>
       </el-table>

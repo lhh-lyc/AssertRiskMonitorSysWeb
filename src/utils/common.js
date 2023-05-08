@@ -52,7 +52,7 @@ function checkPhone(phone) {
 function getFolder() {
 	var folder = '';
 	if (sessionStorage.getItem(commonkey.isParkKey) == 1) { //园区
-		folder = "park";
+		folder = "park";lo
 	} else if (sessionStorage.getItem(commonkey.isParkKey) == 0) { //企业
 		folder = "unit/" + sessionStorage.getItem(commonkey.unitIdKey);
 	} else {

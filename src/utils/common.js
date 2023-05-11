@@ -3,6 +3,7 @@
  */
 const commonkey = {
 	adminTokenKey: "admin_token",
+	refreshTokenKey: "refresh_token",
 	adminUserIdKey: "admin_userId",
 	isAdminKey: "is_admin",
 	adminEncUserIdKey: "admin_encUserId",

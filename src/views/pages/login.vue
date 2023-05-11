@@ -168,17 +168,16 @@ export default {
               }
               Cookies.set("access_token", res.data.access_token);
               Cookies.set("refresh_token", res.data.refresh_token);
-              var token = res.data.access_token;
-              if (token != null) {
-                sessionStorage.setItem(commonkey.adminTokenKey, token);
+              if (res.data.access_token != null) {
+                sessionStorage.setItem(commonkey.adminTokenKey, res.data.access_token);
+              }
+              if (res.data.refresh_token != null) {
+                sessionStorage.setItem(commonkey.refreshTokenKey, res.data.refresh_token);
               }
               sessionStorage.setItem(commonkey.adminUserIdKey, res.data.userId);
               sessionStorage.setItem(commonkey.isAdminKey, res.data.isAdmin);
               sessionStorage.setItem(commonkey.adminEncUserIdKey, res.data.encUserId);
-              sessionStorage.setItem(
-                commonkey.adminUserNamekey,
-                res.data.userName
-              );
+              sessionStorage.setItem(commonkey.adminUserNamekey, res.data.userName);
               this.$store.state.user.name = res.data.userName;
               this.$router.replace({
                 name: "home",

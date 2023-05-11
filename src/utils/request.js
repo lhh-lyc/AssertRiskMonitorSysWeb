@@ -17,8 +17,8 @@ const http = axios.create({
  */
 http.interceptors.request.use(config => {
   config.headers['Accept-Language'] = Cookies.get('language') || 'zh-CN'
-  config.headers['refresh_token'] = Cookies.get('refresh_token') || ''
-  config.headers['Authorization'] = Cookies.get('access_token') || ''
+  config.headers['refresh_token'] = sessionStorage.getItem(commonkey.refreshTokenKey) || ''
+  config.headers['Authorization'] = sessionStorage.getItem(commonkey.adminTokenKey) || ''
   config.headers['encUserId'] = sessionStorage.getItem(commonkey.adminEncUserIdKey) || ''
   config.headers['isAdmin'] = sessionStorage.getItem(commonkey.isAdminKey) || 0
   config.headers['Content-Type'] = 'application/json;charset=UTF-8'

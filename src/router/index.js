@@ -38,6 +38,7 @@ export const moduleRoutes = {
 }
 
 export function addDynamicRoute(routeParams, router) {
+  debugger
   // 组装路由名称, 并判断是否已添加, 如是: 则直接跳转
   var routeName = routeParams.routeName
   var dynamicRoute = window.SITE_CONFIG['dynamicRoutes'].filter(item => item.name === routeName)[0]

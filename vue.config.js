@@ -10,6 +10,9 @@ module.exports = {
       .test(/\.svg$/)
       .use('svg-sprite-loader')
       .loader('svg-sprite-loader')
+      .options({
+        symbolId: 'icon-[name]'
+      })
   },
   productionSourceMap: false,
   devServer: {

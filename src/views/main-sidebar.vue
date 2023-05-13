@@ -25,7 +25,6 @@ export default {
   },
   created () {
     this.$store.state.sidebarMenuList = window.SITE_CONFIG['menuList']
-    console.log(this.$store.state.sidebarMenuList)
   }
 }
 </script>

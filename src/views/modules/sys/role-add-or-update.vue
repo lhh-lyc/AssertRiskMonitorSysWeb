@@ -132,7 +132,6 @@ export default {
             }
           }
         }
-        console.log(this.menuIds)
         this.$refs.menuListTree.setCheckedKeys(this.menuIds)
       })
     },
@@ -144,7 +143,6 @@ export default {
         }
         // 得到已选中的 key 值
         this.dataForm.menuIdList = this.menuIds
-        console.log(this.menuIds)
         var url = this.dataForm.roleId == undefined ? '/sys/role/save' : '/sys/role/update';
         this.dataForm.roleType = 0
         this.$http['post'](url, this.dataForm).then(({data: res}) => {

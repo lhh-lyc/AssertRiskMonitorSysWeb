@@ -22,17 +22,17 @@
             <svg slot="label" class="icon-svg aui-content--tabs-icon-nav" aria-hidden="true"><use xlink:href="#icon-home"></use></svg>
           </template>
           <iframe v-if="tabIsIframe(item.iframeURL)" :src="item.iframeURL" width="100%" height="100%" frameborder="0" scrolling="yes"></iframe>
-          <keep-alive v-else>
+          <template v-else>
             <router-view v-if="item.name === $store.state.contentTabsActiveName" />
-          </keep-alive>
+          </template>
         </el-tab-pane>
       </el-tabs>
     </template>
     <!-- 其他方式, 展示内容 -->
     <template v-else>
-      <keep-alive>
+      <template>
         <router-view />
-      </keep-alive>
+      </template>
     </template>
   </main>
 </template>

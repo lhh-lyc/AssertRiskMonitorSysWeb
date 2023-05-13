@@ -103,7 +103,7 @@ export default {
     return {
       userId: sessionStorage.getItem(commonkey.adminUserIdKey),
       topBoxes: [],
-      recordType: 1,
+      recordType: "1",
       reverse: true,
       recordList: [],
       addOrUpdateVisible: false, // 弹窗visible状态

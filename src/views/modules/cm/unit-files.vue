@@ -803,7 +803,6 @@ export default {
       }
     },
     handleClick(tab, event) {
-      console.log(tab, event);
     },
     // 获取tab列表信息
     queryListAll() {

@@ -14,6 +14,7 @@ import renDeptTree from '@/components/ren-dept-tree'
 import renRegionTree from '@/components/ren-region-tree'
 import { hasPermission, getDictLabel } from '@/utils'
 import cloneDeep from 'lodash/cloneDeep'
+import '@/assets/iconfont/iconfont.css'
 
 Vue.config.productionTip = false
 

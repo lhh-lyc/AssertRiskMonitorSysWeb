@@ -55,7 +55,6 @@ export default {
           }
         }
       ).then(({ data: res }) => {
-        console.log('query \nurl='+this.mixinViewModuleOptions.getDataListURL+'\nr='+JSON.stringify(res));
         this.dataListLoading = false
         if (res.code != 200) {
           this.dataList = []
@@ -100,7 +99,6 @@ export default {
     },
     // 新增 / 修改
     addOrUpdateHandle (id) {
-      console.log('点击新增修改 id='+id);
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
         this.$refs.addOrUpdate.dataForm.id = id

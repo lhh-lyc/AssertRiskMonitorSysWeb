@@ -338,8 +338,8 @@ export default {
     AddOrUpdate,
   },
   mounted() {
-    this.queryType = this.params.type;
-    let tagValue = this.params.tagValue;
+    this.queryType = this.$route.params.type;
+    let tagValue = this.$route.params.tagValue;
     if (!isBlank(this.queryType)) {
       if (this.queryType == 1) {
         this.q.projectId = parseInt(tagValue);
@@ -361,39 +361,9 @@ export default {
         this.q.ip = arr[0];
         this.q.port = arr[1];
       }
-      this.getDataList();
-      this.getProjectList();
     }
-  },
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.queryType = to.params.type;
-      let tagValue = to.params.tagValue;
-      if (!isBlank(vm.queryType)) {
-        if (vm.queryType == 1) {
-          vm.q.projectId = parseInt(tagValue);
-        }
-        if (vm.queryType == 2) {
-          vm.q.company = tagValue;
-        }
-        if (vm.queryType == 3) {
-          vm.q.parentDomain = tagValue;
-        }
-        if (vm.queryType == 4) {
-          vm.q.domain = tagValue;
-        }
-        if (vm.queryType == 5) {
-          vm.q.ip = tagValue;
-        }
-        if (vm.queryType == 6) {
-          let arr = tagValue.split(":");
-          vm.q.ip = arr[0];
-          vm.q.port = arr[1];
-        }
-        vm.getDataList();
-        vm.getProjectList();
-      }
-    })
+    this.getDataList();
+    this.getProjectList();
   },
   methods: {
     // 点击企业名称

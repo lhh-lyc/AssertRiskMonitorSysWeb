@@ -6,32 +6,32 @@
           <div class="big-box">
             <div class="title-font">已发现</div>
             <div class="box-row">
-              <div class="box" v-for="item in topBoxes.slice(0, 4)" :key="item.id" @click="showList(item.type)">
-                <div class="box-title">{{ item.title }}</div>
-                <div class="box-icon">{{ item.num }}</div>
+              <div class="box" v-for="(item,index) in 4" :key="index" @click="showList(index+1)">
+                <div class="box-title">{{ topBoxes[index]?topBoxes[index].title:initTitle[index] }}</div>
+                <div class="box-icon">{{ topBoxes[index]?topBoxes[index].num:'0'  }}</div>
               </div>
             </div>
             <div class="box-row">
-              <div class="box" v-for="item in topBoxes.slice(4, 8)" :key="item.id" @click="showList(item.type)">
-                <div class="box-title">{{ item.title }}</div>
-                <div class="box-icon">{{ item.num }}</div>
+              <div class="box"  v-for="(item,index) in 4" :key="index" @click="showList(index+4)">
+               <div class="box-title">{{ topBoxes[index+4]?topBoxes[index+4].title:initTitle[index+4] }}</div>
+              <div class="box-icon">{{ topBoxes[index+4]?topBoxes[index+4].num:'0' }}</div>
               </div>
             </div>
           </div>
         </el-col>
-        <el-col :span="6">
+       <el-col :span="6">
           <div class="big-box-right">
             <div class="title-font">待执行</div>
-            <div class="box-row">
-              <div class="box-right" v-for="item in topBoxes.slice(10, 11)" :key="item.id">
-                <div class="box-title">{{ item.title }}</div>
-                <div class="box-icon">{{ item.num }}</div>
-              </div>
-            </div>
-            <div class="box-row">
-              <div class="box-right" v-for="item in topBoxes.slice(11, 12)" :key="item.id">
-                <div class="box-title">{{ item.title }}</div>
-                <div class="box-icon">{{ item.num }}</div>
+<!--            <div class="box-row">-->
+<!--              <div class="box-right" v-for="item in topBoxes.slice(10, 11)" :key="item.id">-->
+<!--                <div class="box-title">{{ topBoxes[10]?topBoxes[10].title:initTitle[10] }}</div>-->
+<!--                <div class="box-icon">{{ topBoxes[10]?topBoxes[10].num:'0' }}</div>-->
+<!--              </div>-->
+<!--            </div>-->
+            <div class="box-row" v-for="(item,index) in 2" :key="index">
+              <div class="box-right" >
+                <div class="box-title">{{ topBoxes[index+10]?topBoxes[index+10].title:initTitle[index+10] }}</div>
+                <div class="box-icon">{{ topBoxes[index+10]?topBoxes[index+10].num:'0' }}</div>
               </div>
             </div>
           </div>
@@ -103,6 +103,7 @@ export default {
     return {
       userId: sessionStorage.getItem(commonkey.adminUserIdKey),
       topBoxes: [],
+      initTitle:["项目","企业","主域名","子域名","IP","端口","网站","漏洞","主域名已收集","IP已扫描","主域名收集","IP扫描"],
       recordType: "1",
       reverse: true,
       recordList: [],
@@ -119,16 +120,25 @@ export default {
   methods: {
     getHomeNum() {
       let that = this;
-      getHomeNum().then(({data: res}) => {
-        if (res.code != 200) {
-          return this.$message.error(res.msg);
-        }
-        res.data.forEach(function (item) {
-          that.topBoxes.push(item);
-        })
-        // 初始化图表
-        this.initChart()
-      });
+      for (let i =1; i < 13;i++) {
+        getHomeNum(assign({
+          type: i
+        })).then(({data: res}) => {
+          if (res.code != 200) {
+            return this.$message.error(res.msg);
+          }
+          console.log(res.data.type-1)
+          console.log(res.data)
+          const index = res.data.type-1
+          that.topBoxes[index] = res.data
+          this.$forceUpdate()
+          // debugger
+          // console.log( that.topBoxes)
+          // that.topBoxes.push(res.data);
+          // 初始化图表
+          this.initChart()
+        });
+      }
     },
     showList(type) {
       let typeList = [1,2,3,4,5,6,7];

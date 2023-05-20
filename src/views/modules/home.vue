@@ -12,7 +12,7 @@
               </div>
             </div>
             <div class="box-row">
-              <div class="box"  v-for="(item,index) in 4" :key="index" @click="showList(index+4)">
+              <div class="box"  v-for="(item,index) in 4" :key="index" @click="showList(index+5)">
                <div class="box-title">{{ topBoxes[index+4]?topBoxes[index+4].title:initTitle[index+4] }}</div>
               <div class="box-icon">{{ topBoxes[index+4]?topBoxes[index+4].num:'0' }}</div>
               </div>

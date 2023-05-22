@@ -20,8 +20,20 @@
       </el-form-item>
       <el-form-item prop="type" label="字典所属类型值">
         <el-input
-          v-model="dataForm.type"
-          placeholder="字典所属类型值"
+            v-model="dataForm.type"
+            placeholder="字典所属类型值"
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="type" label="字典值说明">
+        <el-input
+            v-model="dataForm.code"
+            placeholder="字典值说明"
+        ></el-input>
+      </el-form-item>
+      <el-form-item prop="type" label="字典值">
+        <el-input
+            v-model="dataForm.value"
+            placeholder="字典值"
         ></el-input>
       </el-form-item>
     </el-form>

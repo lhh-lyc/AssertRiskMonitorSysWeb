@@ -66,10 +66,24 @@
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="type"
-          label="字典所属类型值"
-          header-align="center"
-          align="center"
+            prop="type"
+            label="字典所属类型值"
+            header-align="center"
+            align="center"
+        >
+        </el-table-column>
+        <el-table-column
+            prop="code"
+            label="字典值说明"
+            header-align="center"
+            align="center"
+        >
+        </el-table-column>
+        <el-table-column
+            prop="value"
+            label="字典值"
+            header-align="center"
+            align="center"
         >
         </el-table-column>
         <el-table-column
@@ -86,20 +100,20 @@
           width="150"
         >
           <template slot-scope="scope">
-            <el-button
+<!--            <el-button
               v-if="$hasPermission('sys:dict:update')"
               type="text"
               size="small"
               @click="addOrUpdateHandle2(scope.row.type,scope.row.name)"
               >具体字典值</el-button
-            >
-            <!-- <el-button
+            >-->
+             <el-button
               v-if="$hasPermission('sys:dict:delete')"
               type="text"
               size="small"
-              @click="deleteHandle(scope.row.type)"
+              @click="deleteHandle(scope.row.id)"
               >{{ $t("delete") }}</el-button
-            > -->
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -120,10 +134,10 @@
         @refreshDataList="getDataList"
       ></add-or-update>
       <!-- 具体字典值 -->
-      <add-or-update2
+<!--      <add-or-update2
         v-if="addOrUpdateVisible2"
         ref="addOrUpdate2"
-      ></add-or-update2>
+      ></add-or-update2>-->
     </div>
   </el-card>
 </template>
@@ -162,7 +176,7 @@ export default {
     query() {
       this.$http
         .get(
-          `/sys/dict/list?dictType=0&page=${this.page}&limit=${this.limit}&name=${this.dataForm.name}`
+          `/sys/dict/page?dictType=0&page=${this.page}&limit=${this.limit}&name=${this.dataForm.name}`
         )
         .then(({ data: res }) => {
           if (res.code != 200) {
@@ -227,7 +241,6 @@ export default {
           duration: 1500,
         });
       }
-      id = this.dataListSelections[0].type;
       this.$confirm(
         this.$t("prompt.info", { handle: this.$t("delete") }),
         this.$t("prompt.title"),
@@ -239,7 +252,7 @@ export default {
       )
         .then(() => {
           this.$http
-            .post("/sys/dict/delete", id, { emulateJSON: true })
+            .post("/sys/dict/deleteBatch", JSON.stringify([id]), { emulateJSON: true })
             .then(({ data: res }) => {
               if (res.code != 200) {
                 return this.$message.error(res.msg);

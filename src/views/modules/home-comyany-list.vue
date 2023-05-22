@@ -13,7 +13,7 @@
       >
         <el-table-column label="序号" align="center" width="70px">
           <template slot-scope="scop">
-            {{limit*(page-1) + scop.$index + 1 }}
+            {{showId + scop.$index + 1 }}
           </template>
         </el-table-column>
         <el-table-column
@@ -58,6 +58,7 @@ export default {
         scanPorts: '',
         scanPortsStr: ''
       },
+      showId: '',
       tagName: '',
       dataList: [],
       order: "", // 排序，asc／desc
@@ -114,6 +115,7 @@ export default {
             }
             this.dataList = res.data.records
             this.total = res.data.total || 0;
+            this.showId = res.data.size*(res.data.current-1);
           })
           .catch(() => {
           });

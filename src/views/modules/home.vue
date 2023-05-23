@@ -7,31 +7,31 @@
             <div class="title-font">已发现</div>
             <div class="box-row">
               <div class="box" v-for="(item,index) in 4" :key="index" @click="showList(index+1)">
-                <div class="box-title">{{ topBoxes[index]?topBoxes[index].title:initTitle[index] }}</div>
-                <div class="box-icon">{{ topBoxes[index]?topBoxes[index].num:'0'  }}</div>
+                <div class="box-title">{{ topBoxes[index] ? topBoxes[index].title : initTitle[index] }}</div>
+                <div class="box-icon">{{ topBoxes[index] ? topBoxes[index].num : '0' }}</div>
               </div>
             </div>
             <div class="box-row">
-              <div class="box"  v-for="(item,index) in 4" :key="index" @click="showList(index+5)">
-               <div class="box-title">{{ topBoxes[index+4]?topBoxes[index+4].title:initTitle[index+4] }}</div>
-              <div class="box-icon">{{ topBoxes[index+4]?topBoxes[index+4].num:'0' }}</div>
+              <div class="box" v-for="(item,index) in 4" :key="index" @click="showList(index+5)">
+                <div class="box-title">{{
+                    topBoxes[index + 4] ? topBoxes[index + 4].title : initTitle[index + 4]
+                  }}
+                </div>
+                <div class="box-icon">{{ topBoxes[index + 4] ? topBoxes[index + 4].num : '0' }}</div>
               </div>
             </div>
           </div>
         </el-col>
-       <el-col :span="6">
+        <el-col :span="6">
           <div class="big-box-right">
             <div class="title-font">待执行</div>
-<!--            <div class="box-row">-->
-<!--              <div class="box-right" v-for="item in topBoxes.slice(10, 11)" :key="item.id">-->
-<!--                <div class="box-title">{{ topBoxes[10]?topBoxes[10].title:initTitle[10] }}</div>-->
-<!--                <div class="box-icon">{{ topBoxes[10]?topBoxes[10].num:'0' }}</div>-->
-<!--              </div>-->
-<!--            </div>-->
             <div class="box-row" v-for="(item,index) in 2" :key="index">
-              <div class="box-right" >
-                <div class="box-title">{{ topBoxes[index+10]?topBoxes[index+10].title:initTitle[index+10] }}</div>
-                <div class="box-icon">{{ topBoxes[index+10]?topBoxes[index+10].num:'0' }}</div>
+              <div class="box-right">
+                <div class="box-title">{{
+                    topBoxes[index + 10] ? topBoxes[index + 10].title : initTitle[index + 10]
+                  }}
+                </div>
+                <div class="box-icon">{{ topBoxes[index + 10] ? topBoxes[index + 10].num : '0' }}</div>
               </div>
             </div>
           </div>
@@ -65,13 +65,66 @@
           </div>
         </el-col>
         <el-col :span="12">
-          <div class="chart-box">
-            <div class="chart">
-              <div class="chart-container">
-                <div ref="chart" class="chart"></div>
+          <el-col :span="12">
+            <div class="chart-box left-chart-box">
+              <div class="chart">
+                <div class="chart-container">
+                  <div ref="chart1" class="chart"></div>
+                </div>
               </div>
             </div>
-          </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="chart-box right-chart-box">
+              <div class="chart">
+                <div class="chart-container">
+                  <div ref="chart2" class="chart"></div>
+                </div>
+              </div>
+            </div>
+          </el-col>
+        </el-col>
+      </el-row>
+      <el-row class="next-row">
+        <el-col :span="12">
+          <el-col :span="12">
+            <div class="chart-box left-chart-box">
+              <div class="chart">
+                <div class="chart-container">
+                  <div ref="chart3" class="chart"></div>
+                </div>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="chart-box right-chart-box">
+              <div class="chart">
+                <div class="chart-container">
+                  <div ref="chart4" class="chart"></div>
+                </div>
+              </div>
+            </div>
+          </el-col>
+        </el-col>
+        <el-col :span="12">
+          <el-col :span="12">
+            <div class="chart-box left-chart-box">
+              <div class="chart">
+                <div class="chart-container">
+                  <div ref="chart5" class="chart"></div>
+                </div>
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="chart-box right-chart-box">
+              <div class="chart">
+                <div class="chart-container">
+                  <div ref="chart6" class="chart"></div>
+                </div>
+              </div>
+            </div>
+          </el-col>
         </el-col>
       </el-row>
     </div>
@@ -87,14 +140,15 @@
 <script>
 import {
   getHomeNum,
-  recordClick
+  recordClick,
+  companyRanking
 } from "@/api/home";
 import AddOrUpdate from "./home-comyany-list";
 import {
   formatYMD,
 } from "@/api/common";
 import * as echarts from 'echarts';
-import {commonkey} from "@/utils/common";
+import {commonkey, isBlank} from "@/utils/common";
 import {assign} from "lodash";
 import request from '@/utils/request'
 
@@ -103,11 +157,12 @@ export default {
     return {
       userId: sessionStorage.getItem(commonkey.adminUserIdKey),
       topBoxes: [],
-      initTitle:["项目","企业","主域名","子域名","IP","端口","网站","漏洞","主域名已收集","IP已扫描","主域名收集","IP扫描"],
+      initTitle: ["项目", "企业", "主域名", "子域名", "IP", "端口", "网站", "漏洞", "主域名已收集", "IP已扫描", "主域名收集", "IP扫描"],
       recordType: "1",
       reverse: true,
       recordList: [],
       addOrUpdateVisible: false, // 弹窗visible状态
+      companyRankingList: []
     }
   },
   components: {
@@ -116,32 +171,27 @@ export default {
   mounted() {
     this.getHomeNum()
     this.recordClick()
+    this.companyRanking()
+    this.initChart()
   },
   methods: {
     getHomeNum() {
       let that = this;
-      for (let i =1; i < 13;i++) {
+      for (let i = 1; i < 13; i++) {
         getHomeNum(assign({
           type: i
         })).then(({data: res}) => {
           if (res.code != 200) {
             return this.$message.error(res.msg);
           }
-          console.log(res.data.type-1)
-          console.log(res.data)
-          const index = res.data.type-1
+          const index = res.data.type - 1
           that.topBoxes[index] = res.data
           this.$forceUpdate()
-          // debugger
-          // console.log( that.topBoxes)
-          // that.topBoxes.push(res.data);
-          // 初始化图表
-          this.initChart()
         });
       }
     },
     showList(type) {
-      let typeList = [1,2,3,4,5,6,7];
+      let typeList = [1, 2, 3, 4, 5, 6, 7];
       if (typeList.indexOf(type) != -1) {
         this.addOrUpdateVisible = true;
         this.$nextTick(() => {
@@ -166,91 +216,216 @@ export default {
         this.recordList = res.data;
       });
     },
+    companyRanking() {
+      for (let i = 1; i <= 6; i++) {
+        companyRanking(assign({
+          type: i
+        })).then(({data: res}) => {
+          if (res.code != 200) {
+            return this.$message.error(res.msg);
+          }
+          const index = i
+          let ydata = [];
+          let xdata = [];
+          if (!isBlank(res.data)) {
+            res.data.forEach(function(item) {
+              ydata.push(item.type);
+              xdata.push(item.value);
+            })
+          }
+          let title = '';
+          if (i == 1) {
+            title = '企业主域名排行';
+          }
+          if (i == 2) {
+            title = '企业子域名排行';
+          }
+          if (i == 3) {
+            title = '企业IP排行';
+          }
+          if (i == 4) {
+            title = '企业端口排行';
+          }
+          if (i == 5) {
+            title = '企业网站排行';
+          }
+          if (i == 6) {
+            title = '企业漏洞排行';
+          }
+          this.drawChart(index, xdata, ydata, title)
+          this.$forceUpdate()
+        });
+      }
+    },
     initChart() {
       // 使用第三方图表库进行图表绘制
       // 例如：echarts
-      let that = this;
-      let chart = echarts.init(this.$refs.chart)
-
-      // 设置图表配置项
+      for (let i = 1; i <= 6; i++) {
+        let chartNumber = i;
+        let title = '';
+        if (i == 1) {
+          title = '企业主域名排行';
+        }
+        if (i == 2) {
+          title = '企业子域名排行';
+        }
+        if (i == 3) {
+          title = '企业IP排行';
+        }
+        if (i == 4) {
+          title = '企业端口排行';
+        }
+        if (i == 5) {
+          title = '企业网站排行';
+        }
+        if (i == 6) {
+          title = '企业漏洞排行';
+        }
+        let ydata = [];
+        let xdata = [];
+        // let ydata = ['上海', '北京', '深圳', '天津', '河南', '新疆', '澳门'];
+        // let xdata = [12, 13, 14, 15, 16, 17, 18];
+        this.drawChart(chartNumber, xdata, ydata, title)
+      }
+    },
+    drawChart(chartNumber, xdata, ydata, title){
+      const chartRefName = `chart${chartNumber}`;
+      const chartRef = this.$refs[chartRefName];
+      let chart = echarts.init(chartRef)
       let option = {
+        title: {
+          text: title,
+          left: 'center'
+        },
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
+          trigger: "axis",
         },
-        legend: {
-          data: [
-            '已扫描IP',
-            '未扫描IP',
-            '已扫描域名',
-            '未扫描域名',
-          ]
+        grid: {
+          left: "80",
+          right: "20",
+          bottom: "20",
+          top: "20",
+          containLabel: false,
         },
-        series: [
-          {
-            name: 'Access From',
-            type: 'pie',
-            selectedMode: 'single',
-            radius: [0, '30%'],
-            label: {
-              position: 'inner',
-              fontSize: 14
-            },
-            labelLine: {
-              show: false
-            },
-            data: [
-              { value: JSON.stringify(that.topBoxes[9].num), name: '已扫描IP' },
-              { value: JSON.stringify(that.topBoxes[11].num), name: '未扫描IP', selected: true }
-            ]
+        xAxis: {
+          type: "value",
+          show: false,
+        },
+        yAxis: {
+          type: "category",
+          data: ydata,
+          axisLine: {
+            show: false,
           },
-          {
-            name: 'Access From',
-            type: 'pie',
-            radius: ['45%', '60%'],
-            labelLine: {
-              length: 30
-            },
-            label: {
-              formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-              backgroundColor: '#F6F8FC',
-              borderColor: '#8C8D8E',
-              borderWidth: 1,
-              borderRadius: 4,
-              rich: {
-                a: {
-                  color: '#6E7079',
-                  lineHeight: 22,
-                  align: 'center'
-                },
-                hr: {
-                  borderColor: '#8C8D8E',
-                  width: '100%',
-                  borderWidth: 1,
-                  height: 0
-                },
-                b: {
-                  color: '#4C5058',
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                  lineHeight: 33
-                },
-                per: {
-                  color: '#fff',
-                  backgroundColor: '#4C5058',
-                  padding: [3, 4],
-                  borderRadius: 4
-                }
+          axisTick: {
+            show: false,
+          },
+          axisLabel: {
+            margin: 70,
+            align: "left",
+            overflow: "truncate",
+            formatter: function (value, index) {
+              if (value.length>3) {
+                value = value.substr(0,3)+'...'
               }
+              let ind = index + 1;
+              if (ind == ydata.length) {
+                return "{one|" + (ydata.length - index) + "} {a|" + value + "}";
+              } else if (ind + 1 == ydata.length) {
+                return "{two|" + (ydata.length - index) + "} {b|" + value + "}";
+              } else if (ind + 2 == ydata.length) {
+                return (
+                    "{three|" + (ydata.length - index) + "} {c|" + value + "}"
+                );
+              }
+              if (ydata.length - index > 9) {
+                return (
+                    "{five|" + (ydata.length - index) + "} {d|" + value + "}"
+                );
+              }
+              return "{four|" + (ydata.length - index) + "} {d|" + value + "}";
             },
-            data: [
-              { value: JSON.stringify(that.topBoxes[8].num), name: '已扫描域名' },
-              { value: JSON.stringify(that.topBoxes[10].num), name: '未扫描域名' },
-            ]
-          }
-        ]
+            rich: {
+              a: {
+                color: "#59c9f9",
+              },
+              b: {
+                color: "#59c9f9",
+              },
+              c: {
+                color: "#59c9f9",
+              },
+              d: {
+                color: "#59c9f9",
+              },
+              // 第一名
+              one: {
+                backgroundColor: "#E86452",
+                color: "white",
+                width: 12,
+                height: 16,
+                padding: [1, 0, 0, 5],
+                borderRadius: 10,
+                fontSize: 11,
+              },
+              // 第二名
+              two: {
+                backgroundColor: "#FF9845",
+                color: "white",
+                width: 12,
+                height: 16,
+                padding: [1, 0, 0, 5],
+                borderRadius: 10,
+                fontSize: 11,
+              },
+              // 第三名
+              three: {
+                backgroundColor: "#F6BD16",
+                color: "white",
+                width: 12,
+                height: 16,
+                padding: [1, 0, 0, 5],
+                borderRadius: 10,
+                fontSize: 11,
+              },
+              // 一位数
+              four: {
+                backgroundColor: "rgba(0,0,0,0.15)",
+                color: "white",
+                width: 12,
+                height: 16,
+                padding: [1, 0, 0, 5],
+                borderRadius: 10,
+                fontSize: 11,
+              },
+              // 两位数
+              five: {
+                backgroundColor: "rgba(0,0,0,0.15)",
+                color: "white",
+                width: 16,
+                height: 16,
+                padding: [1, 0, 0, 1],
+                borderRadius: 10,
+                fontSize: 11,
+              },
+            },
+          },
+        },
+        series: [{
+          type: "bar",
+          showBackground: true,
+          label: {
+            show: true,
+            position: "right",
+            color: "rgba(0,0,0,0.45)",
+          },
+          barWidth: 20,
+          itemStyle: {
+            color: "#5B8FF9",
+          },
+          data: xdata,
+        },],
       };
-
       // 使用刚指定的配置项和数据显示图表
       chart.setOption(option)
     }
@@ -343,12 +518,30 @@ export default {
   height: 200px;
   background-color: #fff;
   border-radius: 10px;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-left: 20px;
-  padding: 20px;
+}
+
+.left-chart-box {
+  height: 200px;
+  background-color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+}
+
+.right-chart-box {
+  height: 200px;
+  background-color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
 }
 
 .chart {
@@ -357,7 +550,7 @@ export default {
 }
 
 .chart-container {
-  height: 400px;
+  height: 440px;
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
@@ -398,6 +591,10 @@ export default {
 .el-timeline-item {
   position: relative;
   padding-bottom: 12px;
+}
+
+.next-row {
+  margin-top: 20px;
 }
 
 ::v-deep .el-timeline-item__timestamp.is-top {

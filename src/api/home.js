@@ -15,3 +15,11 @@ export function recordClick(query) {
         params: query,
     });
 }
+
+export function companyRanking(query) {
+    return request({
+        url: "/scan/home/companyRanking",
+        method: "get",
+        params: query,
+    });
+}

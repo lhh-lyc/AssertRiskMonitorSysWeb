@@ -219,7 +219,8 @@ export default {
     companyRanking() {
       for (let i = 1; i <= 6; i++) {
         companyRanking(assign({
-          type: i
+          type: i,
+          limit: 10
         })).then(({data: res}) => {
           if (res.code != 200) {
             return this.$message.error(res.msg);

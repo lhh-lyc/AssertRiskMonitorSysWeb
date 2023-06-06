@@ -158,7 +158,7 @@ export default {
           }
           var obj = {
             userName: this.dataForm.userName,
-            password: this.dataForm.password,
+            password: md5(this.dataForm.password),
           };
           this.$http
             .post("auth/login", obj)

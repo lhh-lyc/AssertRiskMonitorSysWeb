@@ -24,7 +24,7 @@ const commonkey = {
  * 返回:true 或 flase; true表示为空
  */
 function isBlank(str) {
-	if (str === undefined || str === null || str === "") {
+	if (str === undefined || str === null || str === "" || str.length === 0) {
 		return true;
 	} else {
 		return false;

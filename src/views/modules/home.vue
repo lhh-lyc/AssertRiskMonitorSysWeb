@@ -40,7 +40,7 @@
     </div>
     <div class="bottom-section">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="12" style="padding-top: 20px;">
           <div class="left-box">
             <el-row>
               <el-tabs style="margin-top: 10px;margin-left: 10px" v-model="recordType" type="card"
@@ -64,67 +64,27 @@
             </el-row>
           </div>
         </el-col>
-        <el-col :span="12">
-          <el-col :span="12">
-            <div class="chart-box left-chart-box">
-              <div class="chart">
-                <div class="chart-container">
-                  <div ref="chart1" class="chart"></div>
+        <el-col :span="6" v-for="(item,value,index) in rankData" :key="index" style="padding-top: 20px;">
+          <div class="left-chart-box" >
+            <div class="rank-title-font">{{rankTitle['title'+(index+1)]}}</div>
+            <el-row v-for="(it,idx) in item" :key="idx" style="margin-top: 10px">
+              <el-col :span="2">
+                <div :class="idx == 0 ? 'one' : idx == 1 ? 'two' : idx == 2 ? 'three' : 'four'"></div>
+              </el-col>
+              <el-col :span="18">
+                <el-tooltip class="item" effect="dark" :content="it.type" placement="top-start">
+                <div class="rank-data" @click="rankClick(it.type)">
+                  {{it.sType}}
                 </div>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="12">
-            <div class="chart-box right-chart-box">
-              <div class="chart">
-                <div class="chart-container">
-                  <div ref="chart2" class="chart"></div>
+                </el-tooltip>
+              </el-col>
+              <el-col :span="4">
+                <div class="rank-data">
+                  {{it.value}}
                 </div>
-              </div>
-            </div>
-          </el-col>
-        </el-col>
-      </el-row>
-      <el-row class="next-row">
-        <el-col :span="12">
-          <el-col :span="12">
-            <div class="chart-box left-chart-box">
-              <div class="chart">
-                <div class="chart-container">
-                  <div ref="chart3" class="chart"></div>
-                </div>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="12">
-            <div class="chart-box right-chart-box">
-              <div class="chart">
-                <div class="chart-container">
-                  <div ref="chart4" class="chart"></div>
-                </div>
-              </div>
-            </div>
-          </el-col>
-        </el-col>
-        <el-col :span="12">
-          <el-col :span="12">
-            <div class="chart-box left-chart-box">
-              <div class="chart">
-                <div class="chart-container">
-                  <div ref="chart5" class="chart"></div>
-                </div>
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="12">
-            <div class="chart-box right-chart-box">
-              <div class="chart">
-                <div class="chart-container">
-                  <div ref="chart6" class="chart"></div>
-                </div>
-              </div>
-            </div>
-          </el-col>
+              </el-col>
+            </el-row>
+          </div>
         </el-col>
       </el-row>
     </div>
@@ -162,7 +122,9 @@ export default {
       reverse: true,
       recordList: [],
       addOrUpdateVisible: false, // 弹窗visible状态
-      companyRankingList: []
+      title: '',
+      rankData: {},
+      rankTitle: {}
     }
   },
   components: {
@@ -172,7 +134,7 @@ export default {
     this.getHomeNum()
     this.recordClick()
     this.companyRanking()
-    this.initChart()
+    // this.initChart()
   },
   methods: {
     getHomeNum() {
@@ -202,6 +164,12 @@ export default {
         });
       }
     },
+    rankClick(tag) {
+      this.$router.replace({
+        name: "scan-assets",
+        params: {type: 2, tagValue: tag}
+      });
+    },
     recordClick() {
       let endTime = formatYMD(new Date());
       let beginTime = formatYMD(new Date(new Date() - (7 * 24 * 3600 * 1000)))
@@ -217,7 +185,7 @@ export default {
       });
     },
     companyRanking() {
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 4; i++) {
         companyRanking(assign({
           type: i,
           limit: 10
@@ -225,35 +193,36 @@ export default {
           if (res.code != 200) {
             return this.$message.error(res.msg);
           }
-          const index = i
-          let ydata = [];
-          let xdata = [];
           if (!isBlank(res.data)) {
             res.data.forEach(function(item) {
-              ydata.push(item.type);
-              xdata.push(item.value);
+              if (item.type.length > 10) {
+                let i = item.type.length > 10 ? 10 : item.type.length
+                item.sType = item.type.substr(0, i) + '...'
+              } else {
+                item.sType = item.type;
+              }
             })
+            this.rankData['companyRankingList' + i] = res.data
           }
-          let title = '';
           if (i == 1) {
-            title = '企业主域名排行';
+            this.rankTitle['title' + i] = '企业主域名排行';
           }
           if (i == 2) {
-            title = '企业子域名排行';
+            this.rankTitle['title' + i] = '企业子域名排行';
           }
           if (i == 3) {
-            title = '企业IP排行';
+            this.rankTitle['title' + i] = '企业IP排行';
           }
           if (i == 4) {
-            title = '企业端口排行';
+            this.rankTitle['title' + i] = '企业端口排行';
           }
           if (i == 5) {
-            title = '企业网站排行';
+            this.rankTitle['title' + i] = '企业网站排行';
           }
           if (i == 6) {
-            title = '企业漏洞排行';
+            this.rankTitle['title' + i] = '企业漏洞排行';
           }
-          this.drawChart(index, xdata, ydata, title)
+          // this.drawChart(index, xdata, ydata, title)
           this.$forceUpdate()
         });
       }
@@ -289,7 +258,7 @@ export default {
         this.drawChart(chartNumber, xdata, ydata, title)
       }
     },
-    drawChart(chartNumber, xdata, ydata, title){
+    drawChart(chartNumber, xdata, ydata, title) {
       const chartRefName = `chart${chartNumber}`;
       const chartRef = this.$refs[chartRefName];
       let chart = echarts.init(chartRef)
@@ -326,8 +295,8 @@ export default {
             align: "left",
             overflow: "truncate",
             formatter: function (value, index) {
-              if (value.length>3) {
-                value = value.substr(0,3)+'...'
+              if (value.length > 3) {
+                value = value.substr(0, 3) + '...'
               }
               let ind = index + 1;
               if (ind == ydata.length) {
@@ -500,6 +469,18 @@ export default {
   padding-bottom: 10px;
 }
 
+.rank-title-font{
+  text-align: center;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.rank-data{
+  color: cornflowerblue;
+  font-size: x-large;
+  cursor: pointer;
+}
+
 .box-icon {
   font-size: 36px;
   color: #fff;
@@ -511,7 +492,6 @@ export default {
 }
 
 .bottom-section {
-  padding-top: 20px;
   background-color: #f5f7fa;
 }
 
@@ -526,13 +506,14 @@ export default {
 }
 
 .left-chart-box {
-  height: 200px;
-  background-color: #fff;
   border-radius: 10px;
-  display: flex;
   align-items: center;
   justify-content: center;
   margin-left: 10px;
+  height: 440px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+  padding: 20px;
 }
 
 .right-chart-box {
@@ -567,6 +548,45 @@ export default {
   height: 100%;
 }
 
+.one {
+  type: flex;
+  justify: center;
+  align: middle;
+  width: 22px;
+  height: 22px;
+  background-color: rgba(229,87,87,1);
+  border-radius: 50%;
+}
+
+.two {
+  type: flex;
+  justify: center;
+  align: middle;
+  width: 22px;
+  height: 22px;
+  background-color: rgba(253,148,55,1);
+  border-radius: 50%;
+}
+
+.three {
+  type: flex;
+  justify: center;
+  align: middle;
+  width: 22px;
+  height: 22px;
+  background-color: rgba(83,169,240,0.79);
+  border-radius: 50%;
+}
+
+.four {
+  type: flex;
+  justify: center;
+  align: middle;
+  width: 22px;
+  height: 22px;
+  background-color: rgba(0,200,200,0.3);
+  border-radius: 50%;
+}
 
 ::v-deep .el-tabs__item {
   padding: 0 28px;

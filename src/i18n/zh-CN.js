@@ -3,12 +3,13 @@ const t = {}
 t.loading = '加载中...'
 
 t.brand = {}
-t.brand.lg = '南谯区生态环境分局一企一档系统'
+t.brand.lg = '资产管理平台'
 t.brand.mini = '人人'
 
 t.add = '新增'
 t.delete = '删除'
 t.deleteBatch = '删除'
+t.reScan = '即时扫描'
 t.update = '修改'
 t.query = '查询'
 t.moreQuery = '高级筛选'

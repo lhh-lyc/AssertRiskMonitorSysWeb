@@ -2,7 +2,7 @@
   <nav class="aui-navbar" :class="`aui-navbar--${$store.state.navbarLayoutType}`">
     <div class="headleft">
       <div class="headleftimg"></div>
-      <div class="headlefttext">南谯智慧化环保管家平台</div>
+      <div class="headlefttext">资产管理平台</div>
     </div>
     <div class="aui-navbar__header">
       <!-- <h1 class="aui-navbar__brand" @click="$router.push({ name: 'home' })">

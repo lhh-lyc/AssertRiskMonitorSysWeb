@@ -125,7 +125,7 @@ export default {
           obj.password = md5(this.dataForm.password)
           obj.newPassword = md5(this.dataForm.newPassword)
           this.$http
-            .post("/sys/login/updatePwd", obj, { emulateJSON: true })
+            .post("/auth/updatePwd", obj, { emulateJSON: true })
             .then(({ data: res }) => {
               if (res.code != 200) {
                 return this.$message.error(res.msg);

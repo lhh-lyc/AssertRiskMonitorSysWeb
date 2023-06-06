@@ -8,8 +8,8 @@
           @keyup.enter.native="getDataList()"
       >
         <el-row>
-          <el-form-item prop="roleIdList" label="项目" class="role-list">
-            <el-select v-model="q.projectId" filterable placeholder="请选择" clearable>
+          <el-form-item prop="roleIdList" label="项目">
+            <el-select v-model="q.projectId" filterable placeholder="请选择" clearable style="width: 200px">
               <el-option
                   v-for="item in projectList"
                   :key="item.id"
@@ -53,27 +53,6 @@
           </el-form-item>
           <el-form-item>
             <el-button
-                v-if="$hasPermission('cm:unit:save')"
-                type="primary"
-                icon="el-icon-download"
-                @click="downLoadModule()"
-            >{{ $t("downLoadModule") }}
-            </el-button
-            >
-          </el-form-item>
-          <el-form-item>
-            <el-button
-                v-if="$hasPermission('cm:unit:save')"
-                id="upFlle"
-                type="primary"
-                icon="el-icon-upload2"
-                @click="uploadModule()"
-            >{{ $t("uploadModule") }}
-            </el-button
-            >
-          </el-form-item>
-          <el-form-item>
-            <el-button
                 type="primary"
                 icon="el-icon-download"
                 @click="exportFile()"
@@ -97,43 +76,83 @@
                 clearable
             ></el-input>
           </el-form-item>
-        <el-form-item label="服务">
-          <el-input
-              v-model="q.serverName"
-              placeholder="服务"
-              clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="URL">
-          <el-input
-              v-model="q.url"
-              placeholder="URL"
-              clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="cms">
-          <el-input
-              v-model="q.cms"
-              placeholder="cms"
-              clearable
-          ></el-input>
-        </el-form-item>
+          <el-form-item label="服务">
+            <el-input
+                v-model="q.serverName"
+                placeholder="服务"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="URL">
+            <el-input
+                v-model="q.url"
+                placeholder="URL"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item style="margin-left: 54px;">
+            <el-button
+                v-if="$hasPermission('cm:unit:save')"
+                type="primary"
+                icon="el-icon-download"
+                @click="downLoadModule()"
+            >{{ $t("downLoadModule") }}
+            </el-button
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button
+                v-if="$hasPermission('cm:unit:save')"
+                id="upFlle"
+                type="primary"
+                icon="el-icon-upload2"
+                @click="uploadModule()"
+            >{{ $t("uploadModule") }}
+            </el-button
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button
+                v-if="$hasPermission('cm:unit:save')"
+                type="primary"
+                icon="el-icon-delete"
+                @click="deleteHandleAll()"
+            >{{ $t("deleteBatch") }}
+            </el-button
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button
+                v-if="$hasPermission('cm:unit:save')"
+                type="primary"
+                @click="deleteHandleAll()"
+            >{{ $t("reScan") }}
+            </el-button
+            >
+          </el-form-item>
         </el-row>
         <el-row v-if="moreQueryFlag">
-        <el-form-item label="Title">
-          <el-input
-              v-model="q.title"
-              placeholder="Title"
-              clearable
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="ip归属地">
-          <el-input
-              v-model="q.address"
-              placeholder="ip归属地"
-              clearable
-          ></el-input>
-        </el-form-item>
+          <el-form-item label="cms">
+            <el-input
+                v-model="q.cms"
+                placeholder="cms"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="Title">
+            <el-input
+                v-model="q.title"
+                placeholder="Title"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="ip归属地">
+            <el-input
+                v-model="q.address"
+                placeholder="ip归属地"
+                clearable
+            ></el-input>
+          </el-form-item>
         </el-row>
       </el-form>
       <el-table
@@ -246,14 +265,14 @@
             width="150"
         >
           <template slot-scope="scope">
-<!--            <el-button
-                v-if="$hasPermission('cm:unit:update')"
-                type="text"
-                size="small"
-                @click="addOrUpdateHandle(scope.row.unitId)"
-            >{{ $t("update") }}
-            </el-button
-            >-->
+            <!--            <el-button
+                            v-if="$hasPermission('cm:unit:update')"
+                            type="text"
+                            size="small"
+                            @click="addOrUpdateHandle(scope.row.unitId)"
+                        >{{ $t("update") }}
+                        </el-button
+                        >-->
             <el-button
                 v-if="$hasPermission('cm:unit:delete')"
                 type="text"
@@ -281,21 +300,29 @@
           ref="addOrUpdate"
           @refreshDataList="getDataList"
       ></add-or-update>
+      <!-- 弹窗, 新增 / 修改 -->
+      <delete-batch
+          v-if="deleteVisible"
+          ref="deleteBatch"
+          @refreshDataList="getHomeNum"
+      ></delete-batch>
     </div>
   </el-card>
 </template>
 
 <script>
 import AddOrUpdate from "./assets-add-or-update";
+import deleteBatch from "./assets-delete-list";
 import {addDynamicRoute} from "@/router";
 import {
-  page,exportFile,del
+  page, exportFile, del
 } from "@/api/scan/port";
 import {
   projectList
 } from "@/api/scan/project";
 import {assign} from "_lodash@4.17.21@lodash";
 import {commonkey, isBlank} from "@/utils/common";
+
 export default {
   data() {
     return {
@@ -330,6 +357,7 @@ export default {
       dataListLoading: false, // 数据列表，loading状态
       dataListSelections: [], // 数据列表，多选项
       addOrUpdateVisible: false, // 新增／更新，弹窗visible状态
+      deleteVisible: false,
       options: [], // 企业名称列表
       showFiles: false, // 是否显示附件弹框页
       isAdmin: sessionStorage.getItem(commonkey.isAdminKey)
@@ -337,6 +365,7 @@ export default {
   },
   components: {
     AddOrUpdate,
+    deleteBatch
   },
   mounted() {
     this.queryType = this.$route.params.type;
@@ -411,7 +440,7 @@ export default {
         }
         this.dataList = res.data.records || [];
         this.total = res.data.total || 0;
-        this.showId = res.data.size*(res.data.current-1);
+        this.showId = res.data.size * (res.data.current - 1);
       }).catch(() => {
       });
     },
@@ -458,7 +487,8 @@ export default {
         link.href = objectUrl
         link.click()
         document.body.appendChild(link)
-      }).catch(() => {});
+      }).catch(() => {
+      });
     },
     downLoadModule() {
       let file = "./static/module.xls";
@@ -467,15 +497,15 @@ export default {
       domA.setAttribute('href', file); // 给a标签href属性赋值为要下载文件的路径
       domA.click(); // 点击下载
     },
-    uploadModule(){
+    uploadModule() {
       const _this = this;
-      const fileType = ['xls','xlsx']
+      const fileType = ['xls', 'xlsx']
       const inputFile = document.createElement("input")
       inputFile.type = "file"
       inputFile.style.display = "none"
       document.body.appendChild(inputFile)
       inputFile.click()
-      inputFile.addEventListener("change",function() {
+      inputFile.addEventListener("change", function () {
         const file = inputFile.files[0];
         var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
         if (!fileType.includes(testmsg)) {
@@ -567,50 +597,27 @@ export default {
     },
     // 删除多个  deleteHandleAll
     deleteHandleAll() {
-      if (this.dataListSelections.length <= 0) {
-        return this.$message({
-          message: this.$t("prompt.deleteBatch"),
-          type: "warning",
-          duration: 500,
-        });
-      }
-      let arr = [];
-      this.dataListSelections.forEach(function (item) {
-        if (item.unitId) {
-          arr.push(item.unitId);
-        }
+      this.deleteVisible = true;
+      this.$nextTick(() => {
+        this.$refs.deleteBatch.page = 1;
+        this.$refs.deleteBatch.limit = 10;
+        this.$refs.deleteBatch.type = 1;
+        this.$refs.deleteBatch.doType = 1;
+        this.$refs.deleteBatch.init();
       });
-      this.$confirm(
-          this.$t("prompt.info", {handle: this.$t("delete")}),
-          this.$t("prompt.title"),
-          {
-            confirmButtonText: this.$t("confirm"),
-            cancelButtonText: this.$t("cancel"),
-            type: "warning",
-          }
-      )
-          .then(() => {
-            this.$http
-                .post("/cm/unit/delete", arr, {emulateJSON: true})
-                .then(({data: res}) => {
-                  if (res.code != 200) {
-                    return this.$message.error(res.msg);
-                  }
-                  this.$message({
-                    message: this.$t("prompt.success"),
-                    type: "success",
-                    duration: 500,
-                    onClose: () => {
-                      this.getDataList();
-                    },
-                  });
-                })
-                .catch(() => {
-                });
-          })
-          .catch(() => {
-          });
     },
+    // 即时扫描
+    reScan() {
+      this.deleteVisible = true;
+      this.$nextTick(() => {
+        this.$refs.deleteBatch.page = 1;
+        this.$refs.deleteBatch.limit = 10;
+        this.$refs.deleteBatch.type = 1;
+        this.$refs.deleteBatch.doType = 2;
+        this.$refs.deleteBatch.init();
+      });
+    },
+
   },
 };
 </script>

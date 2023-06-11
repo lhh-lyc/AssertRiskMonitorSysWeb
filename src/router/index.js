@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import http from '@/utils/request'
 import { isURL } from '@/utils/validate'
-import { commonkey } from '@/utils/common.js'
+import {commonkey, isBlank} from '@/utils/common.js'
 
 Vue.use(Router)
 

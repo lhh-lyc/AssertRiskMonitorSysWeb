@@ -34,6 +34,13 @@
           <svg class="icon-svg aui-navbar__icon-menu" aria-hidden="true"><use xlink:href="#icon-fullscreen"></use></svg>
         </el-menu-item> -->
         <el-menu-item index="5" class="aui-navbar__avatar">
+            <span class="el-dropdown-link" @click="seeLetter()">
+              <img src="~@/assets/img/letter.png">
+              <span>| 站内信</span>
+            </span>
+          <el-badge :value="unReadNum" :max="99" class="item"></el-badge>
+        </el-menu-item>
+        <el-menu-item index="5" class="aui-navbar__avatar">
           <el-dropdown placement="bottom" :show-timeout="0">
             <span class="el-dropdown-link">
               <img src="~@/assets/img/avatar.png">
@@ -56,18 +63,28 @@
 import screenfull from 'screenfull'
 import UpdatePassword from './main-navbar-update-password'
 import { clearLoginInfo } from '@/utils'
+import {commonkey, isBlank} from "@/utils/common";
 export default {
   inject: ['refresh'],
   data () {
     return {
       updatePasswordVisible: false,
-      messageTip: false
+      messageTip: false,
+      letterVisible: false,
+      unReadNum: 0
     }
   },
   components: {
     UpdatePassword
   },
-  created(){},
+  created(){
+  },
+  mounted() {
+    let that = this;
+    setInterval(function () {
+      that.getUnReadNum();
+    }, 60000);
+  },
   methods: {
     // 全屏
     fullscreenHandle () {
@@ -101,6 +118,19 @@ export default {
           clearLoginInfo()
           this.$router.push({ name: 'login' })
         }).catch(() => {})
+      }).catch(() => {})
+    },
+    seeLetter () {
+      this.$router.replace({
+        name: "sys-letter",
+      });
+    },
+    getUnReadNum(){
+      this.$http.get('/sys/letter/unReadNum').then(({ data: res }) => {
+        if (res.code != 200) {
+          return this.$message.error(res.msg)
+        }
+        this.unReadNum = isBlank(res.data)? 0 : res.data;
       }).catch(() => {})
     }
   }

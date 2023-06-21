@@ -46,10 +46,13 @@
             </el-button>
           </el-form-item>
           <el-form-item>
-            <el-button icon="el-icon-sort" @click="moreQuery()">{{
-                $t("moreQuery")
-              }}
-            </el-button>
+            <el-button
+                type="primary"
+                icon="el-icon-delete"
+                @click="deleteHandleAll()"
+            >{{ $t("deleteBatch") }}
+            </el-button
+            >
           </el-form-item>
           <el-form-item>
             <el-button
@@ -59,6 +62,12 @@
             >{{ $t("export") }}
             </el-button
             >
+          </el-form-item>
+          <el-form-item>
+            <el-button icon="el-icon-sort" @click="moreQuery()">{{
+                $t("moreQuery")
+              }}
+            </el-button>
           </el-form-item>
         </el-row>
         <el-row v-if="moreQueryFlag">
@@ -92,7 +101,15 @@
           </el-form-item>
           <el-form-item style="margin-left: 54px;">
             <el-button
-                v-if="$hasPermission('cm:unit:save')"
+                type="primary"
+                @click="deleteHandleAll()"
+            >{{ $t("reScan") }}
+            </el-button
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button
+                v-if="isAdmin==1"
                 type="primary"
                 icon="el-icon-download"
                 @click="downLoadModule()"
@@ -102,31 +119,12 @@
           </el-form-item>
           <el-form-item>
             <el-button
-                v-if="$hasPermission('cm:unit:save')"
+                v-if="isAdmin==1"
                 id="upFlle"
                 type="primary"
                 icon="el-icon-upload2"
                 @click="uploadModule()"
             >{{ $t("uploadModule") }}
-            </el-button
-            >
-          </el-form-item>
-          <el-form-item>
-            <el-button
-                v-if="$hasPermission('cm:unit:save')"
-                type="primary"
-                icon="el-icon-delete"
-                @click="deleteHandleAll()"
-            >{{ $t("deleteBatch") }}
-            </el-button
-            >
-          </el-form-item>
-          <el-form-item>
-            <el-button
-                v-if="$hasPermission('cm:unit:save')"
-                type="primary"
-                @click="deleteHandleAll()"
-            >{{ $t("reScan") }}
             </el-button
             >
           </el-form-item>
@@ -304,7 +302,6 @@
       <delete-batch
           v-if="deleteVisible"
           ref="deleteBatch"
-          @refreshDataList="getHomeNum"
       ></delete-batch>
     </div>
   </el-card>

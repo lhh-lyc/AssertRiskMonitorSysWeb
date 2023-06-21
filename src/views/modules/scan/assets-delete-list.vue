@@ -220,40 +220,6 @@ export default {
         params: {type: this.type, tagValue: tagValue}
       });
     },
-    // 表单提交
-    dataFormSubmitHandle: debounce(
-        function () {
-          this.$refs["dataForm"].validate((valid) => {
-            if (!valid) {
-              return false;
-            }
-            if (this.dataForm.portFlag == 0) {
-              this.dataForm.scanPorts = "";
-            }
-            let url = this.dataForm.unitId ? "/scan/project/update" : "/scan/project/saveProject";
-            this.$http
-                .post(url, this.dataForm, {emulateJSON: true})
-                .then(({data: res}) => {
-                  if (res.code != 200) {
-                    return this.$message.error(res.msg);
-                  }
-                  this.$message({
-                    message: this.$t("prompt.success"),
-                    type: "success",
-                    duration: 500,
-                    onClose: () => {
-                      this.visible = false;
-                      this.$emit("refreshDataList");
-                    },
-                  });
-                })
-                .catch(() => {
-                });
-          });
-        },
-        1000,
-        {leading: true, trailing: false}
-    ),
   },
 };
 </script>

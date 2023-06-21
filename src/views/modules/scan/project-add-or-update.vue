@@ -27,7 +27,7 @@
       <el-form-item v-if="dataForm.portFlag==1" prop="scanPorts" label="扫描端口">
         <textarea style="width: 560px;height: 100px" v-model="dataForm.scanPorts" placeholder="扫描端口"></textarea>
       </el-form-item>
-      <el-form-item label="端口类型">
+      <el-form-item v-if="dataForm.portFlag==1" label="端口类型">
         <el-select
             v-model="dataForm.scanPortsStr"
             placeholder="端口类型"

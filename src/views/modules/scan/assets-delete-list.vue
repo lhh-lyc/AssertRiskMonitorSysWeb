@@ -151,9 +151,7 @@ export default {
       });
     },
     init() {
-      if (this.doType == 1) {
-        this.title = this.doType == 1 ? "批量删除" : "即时扫描";
-      }
+      this.title = this.doType == 1 ? "批量删除" : "即时扫描";
       if (this.type == 1) {
         this.tagName = '项目';
       }

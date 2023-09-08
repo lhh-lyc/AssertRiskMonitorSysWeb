@@ -102,7 +102,7 @@
           <el-form-item style="margin-left: 54px;">
             <el-button
                 type="primary"
-                @click="deleteHandleAll()"
+                @click="reScan()"
             >{{ $t("reScan") }}
             </el-button
             >
@@ -141,13 +141,6 @@
             <el-input
                 v-model="q.title"
                 placeholder="Title"
-                clearable
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="ip归属地">
-            <el-input
-                v-model="q.address"
-                placeholder="ip归属地"
                 clearable
             ></el-input>
           </el-form-item>
@@ -244,13 +237,6 @@
         <el-table-column
             prop="title"
             label="Title"
-            header-align="center"
-            align="center"
-            show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-            prop="address"
-            label="IP归属地"
             header-align="center"
             align="center"
             show-overflow-tooltip

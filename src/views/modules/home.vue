@@ -28,10 +28,10 @@
             <div class="box-row" v-for="(item,index) in 2" :key="index">
               <div class="box-right">
                 <div class="box-title">{{
-                    topBoxes[index + 10] ? topBoxes[index + 10].title : initTitle[index + 10]
+                    topUnBoxes[index] ? topUnBoxes[index].title : initUnTitle[index]
                   }}
                 </div>
-                <div class="box-icon">{{ topBoxes[index + 10] ? topBoxes[index + 10].num : '0' }}</div>
+                <div class="box-icon">{{ topUnBoxes[index] ? topUnBoxes[index].num : '0' }}</div>
               </div>
             </div>
           </div>
@@ -45,9 +45,9 @@
             <el-row>
               <el-tabs style="margin-top: 10px;margin-left: 10px" v-model="recordType" type="card"
                        @tab-click="recordClick">
-                <el-tab-pane label="新增漏洞" name="1"></el-tab-pane>
-                <el-tab-pane label="新增域名" name="2"></el-tab-pane>
-                <el-tab-pane label="新增端口" name="3"></el-tab-pane>
+                <el-tab-pane label="新增漏洞" name="3"></el-tab-pane>
+                <el-tab-pane label="新增域名" name="1"></el-tab-pane>
+                <el-tab-pane label="新增端口" name="2"></el-tab-pane>
               </el-tabs>
             </el-row>
             <el-row style="overflow-y: auto;height:355px;">
@@ -65,22 +65,22 @@
           </div>
         </el-col>
         <el-col :span="6" v-for="(item,value,index) in rankData" :key="index" style="padding-top: 20px;">
-          <div class="left-chart-box" >
-            <div class="rank-title-font">{{rankTitle['title'+(index+1)]}}</div>
-            <el-row v-for="(it,idx) in item" :key="idx" style="margin-top: 10px">
+          <div class="left-chart-box">
+            <div class="rank-title-font">{{ rankTitle['title' + (index + 1)] }}</div>
+            <el-row v-for="(it,idx) in rankData['companyRankingList'+(index+1)]" :key="idx" style="margin-top: 10px">
               <el-col :span="2">
                 <div :class="idx == 0 ? 'one' : idx == 1 ? 'two' : idx == 2 ? 'three' : 'four'"></div>
               </el-col>
               <el-col :span="18">
                 <el-tooltip class="item" effect="dark" :content="it.type" placement="top-start">
-                <div class="rank-data" @click="rankClick(it.type)">
-                  {{it.sType}}
-                </div>
+                  <div class="rank-data" @click="rankClick(it.type)">
+                    {{ it.sType }}
+                  </div>
                 </el-tooltip>
               </el-col>
               <el-col :span="4">
                 <div class="rank-data">
-                  {{it.value}}
+                  {{ it.value }}
                 </div>
               </el-col>
             </el-row>
@@ -100,6 +100,7 @@
 <script>
 import {
   getHomeNum,
+  getUnHomeNum,
   recordClick,
   companyRanking
 } from "@/api/home";
@@ -117,7 +118,9 @@ export default {
     return {
       userId: sessionStorage.getItem(commonkey.adminUserIdKey),
       topBoxes: [],
+      topUnBoxes: [],
       initTitle: ["项目", "企业", "主域名", "子域名", "IP", "端口", "网站", "漏洞", "主域名已收集", "IP已扫描", "主域名收集", "IP扫描"],
+      initUnTitle: ["主域名收集", "IP扫描"],
       recordType: "1",
       reverse: true,
       recordList: [],
@@ -132,13 +135,14 @@ export default {
   },
   mounted() {
     this.getHomeNum()
+    this.getUnHomeNum()
     this.recordClick()
     this.companyRanking()
   },
   methods: {
     getHomeNum() {
       let that = this;
-      for (let i = 1; i < 13; i++) {
+      for (let i = 1; i < 11; i++) {
         getHomeNum(assign({
           type: i
         })).then(({data: res}) => {
@@ -150,6 +154,16 @@ export default {
           this.$forceUpdate()
         });
       }
+    },
+    getUnHomeNum() {
+      let that = this;
+      getUnHomeNum(assign()).then(({data: res}) => {
+        if (res.code != 200) {
+          return this.$message.error(res.msg);
+        }
+        that.topUnBoxes = res.data
+        this.$forceUpdate()
+      });
     },
     showList(type) {
       let typeList = [1, 2, 3, 4, 5, 6, 7];
@@ -184,7 +198,7 @@ export default {
       });
     },
     companyRanking() {
-      for (let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= 6; i++) {
         companyRanking(assign({
           type: i,
           limit: 10
@@ -193,7 +207,7 @@ export default {
             return this.$message.error(res.msg);
           }
           if (!isBlank(res.data)) {
-            res.data.forEach(function(item) {
+            res.data.forEach(function (item) {
               if (item.type.length > 10) {
                 let i = item.type.length > 10 ? 10 : item.type.length
                 item.sType = item.type.substr(0, i) + '...'
@@ -216,14 +230,15 @@ export default {
             this.rankTitle['title' + i] = '企业端口排行';
           }
           if (i == 5) {
-            this.rankTitle['title' + i] = '企业网站排行';
+            this.rankTitle['title' + i] = '企业服务排行';
           }
           if (i == 6) {
-            this.rankTitle['title' + i] = '企业漏洞排行';
+            this.rankTitle['title' + i] = '企业cms排行';
           }
           this.$forceUpdate()
         });
       }
+      console.log(this.rankData)
     },
   }
 }
@@ -295,13 +310,13 @@ export default {
   padding-bottom: 10px;
 }
 
-.rank-title-font{
+.rank-title-font {
   text-align: center;
   font-size: 26px;
   font-weight: 600;
 }
 
-.rank-data{
+.rank-data {
   color: cornflowerblue;
   font-size: x-large;
   cursor: pointer;
@@ -380,7 +395,7 @@ export default {
   align: middle;
   width: 22px;
   height: 22px;
-  background-color: rgba(229,87,87,1);
+  background-color: rgba(229, 87, 87, 1);
   border-radius: 50%;
 }
 
@@ -390,7 +405,7 @@ export default {
   align: middle;
   width: 22px;
   height: 22px;
-  background-color: rgba(253,148,55,1);
+  background-color: rgba(253, 148, 55, 1);
   border-radius: 50%;
 }
 
@@ -400,7 +415,7 @@ export default {
   align: middle;
   width: 22px;
   height: 22px;
-  background-color: rgba(83,169,240,0.79);
+  background-color: rgba(83, 169, 240, 0.79);
   border-radius: 50%;
 }
 
@@ -410,7 +425,7 @@ export default {
   align: middle;
   width: 22px;
   height: 22px;
-  background-color: rgba(0,200,200,0.3);
+  background-color: rgba(0, 200, 200, 0.3);
   border-radius: 50%;
 }
 

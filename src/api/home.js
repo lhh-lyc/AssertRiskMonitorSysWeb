@@ -8,6 +8,14 @@ export function getHomeNum(query) {
     });
 }
 
+export function getUnHomeNum(query) {
+    return request({
+        url: "/scan/home/getUnHomeNum",
+        method: "get",
+        params: query,
+    });
+}
+
 export function recordClick(query) {
     return request({
         url: "/scan/home/getRecordList",

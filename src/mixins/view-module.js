@@ -118,7 +118,6 @@ export default {
       }
     },
     // 删除
-    // 删除
     deleteHandle (id) {
       var ids = id ? [id] : this.dataListSelections.map(item => item[this.mixinViewModuleOptions.deleteIsBatchKey])
       if (this.mixinViewModuleOptions.deleteIsBatch && !id && this.dataListSelections.length <= 0) {

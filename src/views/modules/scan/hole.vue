@@ -8,7 +8,7 @@
           @keyup.enter.native="getDataList()"
       >
         <el-row>
-          <el-form-item prop="roleIdList" label="项目">
+          <el-form-item label="项目" label-width="80px">
             <el-select v-model="q.projectId" filterable placeholder="请选择" clearable style="width: 200px">
               <el-option
                   v-for="item in projectList"
@@ -18,24 +18,24 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="公司">
+          <el-form-item label="主域名" label-width="80px">
             <el-input
-                v-model="q.company"
-                placeholder="公司"
-                clearable
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="主域名">
-            <el-input
-                v-model="q.parentDomain"
+                v-model="q.domain"
                 placeholder="主域名"
                 clearable
             ></el-input>
           </el-form-item>
-          <el-form-item label="子域名">
+          <el-form-item label="子域名" label-width="80px">
             <el-input
-                v-model="q.domain"
+                v-model="q.subDomain"
                 placeholder="子域名"
+                clearable
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="漏洞名称" label-width="80px">
+            <el-input
+                v-model="q.name"
+                placeholder="漏洞名称"
                 clearable
             ></el-input>
           </el-form-item>
@@ -48,101 +48,50 @@
           <el-form-item>
             <el-button
                 type="primary"
-                icon="el-icon-delete"
-                @click="deleteHandleAll()"
-            >{{ $t("deleteBatch") }}
-            </el-button
-            >
-          </el-form-item>
-          <el-form-item>
-            <el-button
-                type="primary"
                 icon="el-icon-download"
                 @click="exportFile()"
             >{{ $t("export") }}
             </el-button
             >
           </el-form-item>
-          <el-form-item>
-            <el-button icon="el-icon-sort" @click="moreQuery()">{{
-                $t("moreQuery")
-              }}
-            </el-button>
-          </el-form-item>
         </el-row>
-        <el-row v-if="moreQueryFlag">
-          <el-form-item label="IP">
-            <el-input
-                v-model="q.ip"
-                placeholder="IP"
-                clearable
-            ></el-input>
+        <el-row>
+          <el-form-item label="漏洞级别" label-width="80px">
+            <el-select v-model="q.level" filterable placeholder="请选择" clearable style="width: 200px">
+              <el-option
+                  v-for="item in levelList"
+                  :key="item.value"
+                  :label="item.code"
+                  :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
-          <el-form-item label="端口">
-            <el-input
-                v-model="q.port"
-                placeholder="端口"
-                clearable
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="服务">
-            <el-input
-                v-model="q.serverName"
-                placeholder="服务"
-                clearable
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="URL">
+          <el-form-item label="请求路径" label-width="80px">
             <el-input
                 v-model="q.url"
-                placeholder="URL"
+                placeholder="请求路径"
                 clearable
             ></el-input>
           </el-form-item>
-          <el-form-item style="margin-left: 54px;">
-            <el-button
-                type="primary"
-                @click="reScan()"
-            >{{ $t("reScan") }}
-            </el-button
-            >
+          <el-form-item label="扫描工具" label-width="80px">
+            <el-select v-model="q.toolType" filterable placeholder="请选择" clearable style="width: 200px">
+              <el-option
+                  v-for="item in toolList"
+                  :key="item.value"
+                  :label="item.code"
+                  :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
-          <el-form-item>
-            <el-button
-                v-if="isAdmin==1"
-                type="primary"
-                icon="el-icon-download"
-                @click="downLoadModule()"
-            >{{ $t("downLoadModule") }}
-            </el-button
-            >
-          </el-form-item>
-          <el-form-item>
-            <el-button
-                v-if="isAdmin==1"
-                id="upFlle"
-                type="primary"
-                icon="el-icon-upload2"
-                @click="uploadModule()"
-            >{{ $t("uploadModule") }}
-            </el-button
-            >
-          </el-form-item>
-        </el-row>
-        <el-row v-if="moreQueryFlag">
-          <el-form-item label="cms">
-            <el-input
-                v-model="q.cms"
-                placeholder="cms"
-                clearable
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="Title">
-            <el-input
-                v-model="q.title"
-                placeholder="Title"
-                clearable
-            ></el-input>
+          <el-form-item label="漏洞状态" label-width="80px">
+            <el-select v-model="q.status" filterable placeholder="请选择" clearable style="width: 200px">
+              <el-option
+                  v-for="item in statusList"
+                  :key="item.value"
+                  :label="item.code"
+                  :value="item.value">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-row>
       </el-form>
@@ -176,16 +125,7 @@
         >
         </el-table-column>
         <el-table-column
-            prop="company"
-            label="公司"
-            header-align="center"
-            align="center"
-            width="250"
-            show-overflow-tooltip
-        >
-        </el-table-column>
-        <el-table-column
-            prop="parentDomain"
+            prop="domain"
             label="主域名"
             header-align="center"
             align="center"
@@ -193,54 +133,82 @@
         >
         </el-table-column>
         <el-table-column
-            prop="domain"
+            prop="subDomain"
             label="子域名"
             header-align="center"
             align="center"
             width="200"
             show-overflow-tooltip
         ></el-table-column>
+        <el-table-column label="漏洞名称">
+          <template slot-scope="{ row }">
+            <span v-if="row.name">
+              <el-popover placement="top-start" width="50" trigger="hover">
+               <div>{{ row.name }}</div>
+                 <span slot="reference">
+                    {{ row.name }}
+                 </span>
+             </el-popover>
+           </span>
+          </template>
+        </el-table-column>
         <el-table-column
-            prop="ip"
-            label="IP"
+            prop="levelName"
+            label="漏洞等级"
             header-align="center"
             align="center"
             show-overflow-tooltip
         ></el-table-column>
         <el-table-column
-            prop="port"
-            label="端口"
-            header-align="center"
-            align="center"
-        ></el-table-column>
-        <el-table-column
-            prop="serverName"
-            label="服务"
+            prop="protocol"
+            label="协议"
             header-align="center"
             align="center"
             show-overflow-tooltip
         ></el-table-column>
+        <el-table-column label="请求路径">
+          <template slot-scope="{ row }">
+            <span v-if="row.url">
+              <el-popover placement="top-start" width="500" trigger="hover">
+               <div>{{ row.url }}</div>
+                 <span slot="reference">
+                    {{ row.url }}
+                 </span>
+             </el-popover>
+           </span>
+          </template>
+        </el-table-column>
+        <el-table-column label="请求信息">
+          <template slot-scope="{ row }">
+            <span v-if="row.info">
+              <el-popover placement="top-start" width="500" trigger="hover">
+               <div>{{ row.info }}</div>
+                 <span slot="reference">
+                    {{ row.info }}
+                 </span>
+             </el-popover>
+           </span>
+          </template>
+        </el-table-column>
         <el-table-column
-            prop="url"
-            label="URL"
+            prop="toolTypeName"
+            label="使用工具"
+            header-align="center"
+            align="center"
+        ></el-table-column>
+        <el-table-column
+            prop="statusName"
+            label="状态"
             header-align="center"
             align="center"
             show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-            prop="cms"
-            label="cms"
-            header-align="center"
-            align="center"
-            show-overflow-tooltip
-        ></el-table-column>
-        <el-table-column
-            prop="title"
-            label="Title"
-            header-align="center"
-            align="center"
-            show-overflow-tooltip
-        ></el-table-column>
+        >
+          <template slot-scope="scope">
+            <div :style="{'color':scope.row.status == 1 ? 'red': scope.row.status == 2 ? '#34d04a' : '#a5861c'}">
+              {{ scope.row.statusName }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column
             :label="$t('handle')"
             fixed="right"
@@ -249,22 +217,19 @@
             width="150"
         >
           <template slot-scope="scope">
-            <!--            <el-button
-                            v-if="$hasPermission('cm:unit:update')"
-                            type="text"
-                            size="small"
-                            @click="addOrUpdateHandle(scope.row.unitId)"
-                        >{{ $t("update") }}
-                        </el-button
-                        >-->
             <el-button
-                v-if="$hasPermission('cm:unit:delete') && scope.row.ip != '-' && scope.row.ip != '-'"
+                v-show="scope.row.status == 2"
                 type="text"
                 size="small"
-                @click="deleteHandle(scope.row)"
+                @click="wrongMark(scope.row)"
+            >{{ $t("wrongMark") }}
+            </el-button>
+            <el-button
+                type="text"
+                size="small"
+                @click="deleteHandle(scope.row.id)"
             >{{ $t("delete") }}
-            </el-button
-            >
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -294,15 +259,17 @@
 </template>
 
 <script>
-import AddOrUpdate from "./assets-add-or-update";
-import deleteBatch from "./assets-delete-list";
+import AddOrUpdate from "./hole-add-or-update";
 import {addDynamicRoute} from "@/router";
 import {
-  page, exportFile, del
-} from "@/api/scan/port";
+  page, del, exportFile
+} from "@/api/scan/hole";
 import {
   projectList
 } from "@/api/scan/project";
+import {
+  dictListByType
+} from "@/api/sys/dict";
 import {assign} from "_lodash@4.17.21@lodash";
 import {commonkey, isBlank} from "@/utils/common";
 
@@ -313,15 +280,11 @@ export default {
       q: {
         projectId: '',
         company: '',
-        parentDomain: '',
         domain: '',
-        ip: '',
-        port: '',
-        serverName: '',
-        url: '',
-        cms: '',
-        title: '',
-        address: '',
+        subDomain: '',
+        status: '',
+        toolType: '',
+        level: '',
       },
       showId: '',
       queryType: '',
@@ -332,6 +295,9 @@ export default {
       }, // 查询条件
       dataList: [], // 数据列表
       projectList: [],
+      levelList: [],
+      toolList: [],
+      statusList: [],
       order: "", // 排序，asc／desc
       orderField: "", // 排序，字段
       page: 1, // 当前页码
@@ -348,35 +314,13 @@ export default {
   },
   components: {
     AddOrUpdate,
-    deleteBatch
   },
   mounted() {
-    this.queryType = this.$route.params.type;
-    let tagValue = this.$route.params.tagValue;
-    if (!isBlank(this.queryType)) {
-      if (this.queryType == 1) {
-        this.q.projectId = parseInt(tagValue);
-      }
-      if (this.queryType == 2) {
-        this.q.company = tagValue;
-      }
-      if (this.queryType == 3) {
-        this.q.parentDomain = tagValue;
-      }
-      if (this.queryType == 4) {
-        this.q.domain = tagValue;
-      }
-      if (this.queryType == 5) {
-        this.q.ip = tagValue;
-      }
-      if (this.queryType == 6) {
-        let arr = tagValue.split(":");
-        this.q.ip = arr[0];
-        this.q.port = arr[1];
-      }
-    }
     this.getDataList();
     this.getProjectList();
+    this.getLevelList();
+    this.getToolList();
+    this.getStatusList();
   },
   methods: {
     // 点击企业名称
@@ -405,16 +349,11 @@ export default {
         page: this.page,
         limit: this.limit,
         projectId: this.q.projectId,
-        company: this.q.company,
-        parentDomain: this.q.parentDomain,
         domain: this.q.domain,
-        ip: this.q.ip,
-        port: this.q.port,
-        serverName: this.q.serverName,
-        url: this.q.url,
-        cms: this.q.cms,
-        title: this.q.title,
-        address: this.q.address,
+        subDomain: this.q.subDomain,
+        status: this.q.status,
+        toolType: this.q.toolType,
+        level: this.q.level,
       })).then(({data: res}) => {
         if (res.code != 200) {
           this.dataList = [];
@@ -438,6 +377,42 @@ export default {
       }).catch(() => {
       });
     },
+    getLevelList() {
+      dictListByType(assign({
+        type: "hole_level"
+      })).then(({data: res}) => {
+        if (res.code != 200) {
+          this.levelList = [];
+          return this.$message.error(res.msg);
+        }
+        this.levelList = res.data || [];
+      }).catch(() => {
+      });
+    },
+    getToolList() {
+      dictListByType(assign({
+        type: "scan_tool_type"
+      })).then(({data: res}) => {
+        if (res.code != 200) {
+          this.toolList = [];
+          return this.$message.error(res.msg);
+        }
+        this.toolList = res.data || [];
+      }).catch(() => {
+      });
+    },
+    getStatusList() {
+      dictListByType(assign({
+        type: "hole_status"
+      })).then(({data: res}) => {
+        if (res.code != 200) {
+          this.statusList = [];
+          return this.$message.error(res.msg);
+        }
+        this.statusList = res.data || [];
+      }).catch(() => {
+      });
+    },
     moreQuery: function () {
       this.moreQueryFlag = !this.moreQueryFlag;
     },
@@ -447,16 +422,12 @@ export default {
         limit: this.limit,
         projectId: this.q.projectId,
         company: this.q.company,
-        parentDomain: this.q.parentDomain,
         domain: this.q.domain,
-        ip: this.q.ip,
-        port: this.q.port,
-        serverName: this.q.serverName,
-        url: this.q.url,
-        cms: this.q.cms,
-        title: this.q.title,
-        address: this.q.address,
-        filename: '用户资产'
+        subDomain: this.q.subDomain,
+        status: this.q.status,
+        toolType: this.q.toolType,
+        level: this.q.level,
+        filename: '漏洞资产'
       })).then(({data: res}) => {
         const objectUrl = URL.createObjectURL(
             new Blob([res.data], {
@@ -479,43 +450,6 @@ export default {
       domA.setAttribute('download', ''); // 给a标签设置download属性
       domA.setAttribute('href', file); // 给a标签href属性赋值为要下载文件的路径
       domA.click(); // 点击下载
-    },
-    uploadModule() {
-      const _this = this;
-      const fileType = ['xls', 'xlsx']
-      const inputFile = document.createElement("input")
-      inputFile.type = "file"
-      inputFile.style.display = "none"
-      document.body.appendChild(inputFile)
-      inputFile.click()
-      inputFile.addEventListener("change", function () {
-        const file = inputFile.files[0];
-        var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-        if (!fileType.includes(testmsg)) {
-          _this.$message.warning("上传的文件格式只能是,xls,xlsx");
-          document.body.removeChild(inputFile);
-          return false;
-        }
-        const formData = new FormData();
-        formData.append("file", file);
-        _this.$http
-            .post("scan/export/upload", formData, {emulateJSON: true})
-            .then(({data: res}) => {
-              if (res.code != 200) {
-                return _this.$message.error(res.msg);
-              }
-              _this.$message({
-                message: _this.$t("prompt.success"),
-                type: "success",
-                duration: 500,
-                onClose: () => {
-                  _this.getDataList();
-                },
-              });
-            })
-            .catch(() => {
-            });
-      })
     },
     // 多选
     dataListSelectionChangeHandle(val) {
@@ -544,8 +478,43 @@ export default {
         this.$refs.addOrUpdate.init();
       });
     },
+    // 误报标记
+    wrongMark(row) {
+      debugger
+      this.$confirm(
+          "确定将此条数据标记为误报吗？",
+          this.$t("prompt.title"),
+          {
+            confirmButtonText: this.$t("confirm"),
+            cancelButtonText: this.$t("cancel"),
+            type: "warning",
+          }
+      ).then(() => {
+        // 误报状态
+        row.status = 3;
+        let url = "/scan/security/hole/update";
+        this.$http
+            .post(url, row, {emulateJSON: true})
+            .then(({data: res}) => {
+              if (res.code != 200) {
+                return this.$message.error(res.msg);
+              }
+              this.$message({
+                message: this.$t("prompt.success"),
+                type: "success",
+                duration: 500,
+                onClose: () => {
+                  this.visible = false;
+                  this.getDataList();
+                },
+              });
+            })
+            .catch(() => {
+            });
+      })
+    },
     // 删除
-    deleteHandle(row) {
+    deleteHandle(id) {
       this.$confirm(
           this.$t("prompt.info", {handle: this.$t("delete")}),
           this.$t("prompt.title"),
@@ -555,29 +524,26 @@ export default {
             type: "warning",
           }
       ).then(() => {
-        if (row.ip != '-' && row.port != '-') {
-          let param = {
-            ip: row.ip,
-            ipLong: row.ipLong,
-            port: row.port
-          }
-          del(Object.assign(param)).then(({data: res}) => {
-            if (res.code != 200) {
-              return this.$message.error(res.msg);
-            }
-            this.$message({
-              message: this.$t("prompt.success"),
-              type: "success",
-              duration: 500,
-              onClose: () => {
-                this.getDataList();
-              },
-            });
-          }).catch(() => {
+            this.$http
+                .post("/scan/security/hole/delete", [id], {emulateJSON: true})
+                .then(({data: res}) => {
+                  if (res.code != 200) {
+                    return this.$message.error(res.msg);
+                  }
+                  this.$message({
+                    message: this.$t("prompt.success"),
+                    type: "success",
+                    duration: 500,
+                    onClose: () => {
+                      this.getDataList();
+                    },
+                  });
+                })
+                .catch(() => {
+                });
+          })
+          .catch(() => {
           });
-        }
-      })
-
     },
     // 删除多个  deleteHandleAll
     deleteHandleAll() {
@@ -605,14 +571,15 @@ export default {
   },
 };
 </script>
-<style lang="scss" scoped>
-.unitname {
-  color: #189f92;
-  cursor: pointer;
-}
+<style lang="scss">
 
 .el-input {
   width: 200px;
+}
+
+.el-table .cell {
+  word-break: keep-all !important;
+  white-space: nowrap !important;
 }
 
 </style>

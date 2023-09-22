@@ -21,12 +21,6 @@
 <!--      <el-form-item prop="subDomainFlag" label="子域名收集">-->
 <!--        <el-checkbox v-model="dataForm.subDomainFlag" :true-label="1" :false-label="0">子域名收集</el-checkbox>-->
 <!--      </el-form-item>-->
-      <el-form-item prop="portFlag" label="端口扫描">
-        <el-checkbox v-model="dataForm.portFlag" :true-label="1" :false-label="0">端口扫描</el-checkbox>
-      </el-form-item>
-      <el-form-item v-if="dataForm.portFlag==1" prop="scanPorts" label="扫描端口">
-        <textarea style="width: 560px;height: 100px" v-model="dataForm.scanPorts" placeholder="扫描端口"></textarea>
-      </el-form-item>
       <el-form-item v-if="dataForm.portFlag==1" label="端口类型">
         <el-select
             v-model="dataForm.scanPortsStr"
@@ -43,6 +37,24 @@
               :value="item.code"
           />
         </el-select>
+      </el-form-item>
+      <el-form-item prop="portFlag" label="端口扫描">
+        <el-checkbox v-model="dataForm.portFlag" :true-label="1" :false-label="0">端口扫描</el-checkbox>
+      </el-form-item>
+      <el-form-item prop="scanPorts" label="扫描端口" v-if="dataForm.portFlag==1" >
+        <textarea style="width: 560px;height: 100px" v-model="dataForm.scanPorts" placeholder="扫描端口"></textarea>
+      </el-form-item>
+      <el-form-item label="端口扫描工具" v-if="dataForm.portFlag==1" >
+        <el-radio v-model="dataForm.portTool" :label="1">masscan</el-radio>
+        <el-radio v-model="dataForm.portTool" :label="2">nmap</el-radio>
+      </el-form-item>
+      <el-form-item label="漏洞扫描工具" v-if="dataForm.portFlag==1" >
+        <el-checkbox-group v-model="chooseTool">
+          <el-checkbox v-for="(items,Index) in toolParams" :label="items.type" :key="Index" style="display:block;">
+            <span style="width: 50px;display: inline-block;">{{items.content}}</span>
+            <el-input v-model="items.params"></el-input>
+          </el-checkbox>
+        </el-checkbox-group>
       </el-form-item>
     </el-form>
     <template slot="footer">
@@ -69,9 +81,16 @@ export default {
         subDomainFlag: "",
         portFlag: "",
         scanPorts: '',
-        scanPortsStr: ''
+        scanPortsStr: '',
+        portTool: 1
       },
       portList: [],
+      chooseTool: [0,1,2],
+      toolParams:[
+        {type:1,content:"nuclei",params:""},
+        {type:2,content:"afrog",params:""},
+        {type:3,content:"xray",params:""}
+      ],
     };
   },
   computed: {
@@ -108,13 +127,20 @@ export default {
     init() {
       this.visible = true;
       this.$nextTick(() => {
-        this.$refs["dataForm"].resetFields();
+        // this.$refs["dataForm"].resetFields();
+        this.toolParams = [
+          {type:0,content:"nuclei",params:""},
+          {type:1,content:"afrog",params:""},
+          {type:2,content:"xray",params:""}
+        ];
+        this.chooseTool = [0,1,2];
         this.dataForm.name = '';
         this.dataForm.hosts = '';
         this.dataForm.scanPorts = '';
         this.dataForm.scanPortsStr = '';
         this.dataForm.subDomainFlag = 1;
         this.dataForm.portFlag = 1;
+        this.dataForm.portTool = 1;
         if (this.dataForm.unitId) {
           this.getInfo();
         }
@@ -132,6 +158,17 @@ export default {
               ...this.dataForm,
               ...res.data,
             };
+            this.chooseTool = [];
+            if (this.dataForm.nucleiFlag == 1) {
+              this.chooseTool.push(0);
+            }
+            if (this.dataForm.afrogFlag == 1) {
+              this.chooseTool.push(1);
+            }
+            if (this.dataForm.xrayFlag == 1) {
+              this.chooseTool.push(2);
+            }
+            console.log(this.chooseTool)
           })
           .catch(() => {
           });
@@ -161,6 +198,28 @@ export default {
             if (this.dataForm.portFlag == 0) {
               this.dataForm.scanPorts = "";
             }
+            this.dataForm.nucleiFlag = 0;
+            this.dataForm.nucleiParams = '';
+            this.dataForm.afrogFlag = 0;
+            this.dataForm.afrogParams = '';
+            this.dataForm.xrayFlag = 0;
+            this.dataForm.xrayParams = '';
+            let that = this;
+            let toolParams = this.toolParams;
+            this.chooseTool.forEach(function (item){
+              if (item ==0){
+                that.dataForm.nucleiFlag = 1;
+                that.dataForm.nucleiParams = toolParams[0].params;
+              }
+              if (item ==1){
+                that.dataForm.afrogFlag = 1;
+                that.dataForm.afrogParams = toolParams[1].params;
+              }
+              if (item ==2){
+                that.dataForm.xrayFlag = 1;
+                that.dataForm.xrayParams = toolParams[2].params;
+              }
+            })
             let url = this.dataForm.unitId ? "/scan/project/update" : "/scan/project/saveProject";
             this.$http
                 .post(url, this.dataForm, {emulateJSON: true})

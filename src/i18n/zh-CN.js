@@ -27,6 +27,7 @@ t.manage = '处理'
 t.createDate = '创建时间'
 t.keyword = '关键字：'
 t.choose = '请选择'
+t.wrongMark = '误报标记'
 
 t.prompt = {}
 t.prompt.title = '提示'

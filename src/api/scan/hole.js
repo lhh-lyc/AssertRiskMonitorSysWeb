@@ -2,17 +2,9 @@ import request from "@/utils/request"
 
 export function page(query) {
     return request({
-        url: "/scan/port/queryPage",
+        url: "/scan/security/hole/page",
         method: "get",
         params: query,
-    });
-}
-
-export function del(query) {
-    return request({
-        url: "/scan/port/delete",
-        method: "post",
-        data: query,
     });
 }
 

@@ -1,18 +1,10 @@
 import request from "@/utils/request"
 
-export function page(query) {
+export function dictListByType(query) {
     return request({
-        url: "/scan/port/queryPage",
+        url: "/sys/dict/list",
         method: "get",
         params: query,
-    });
-}
-
-export function del(query) {
-    return request({
-        url: "/scan/port/delete",
-        method: "post",
-        data: query,
     });
 }
 

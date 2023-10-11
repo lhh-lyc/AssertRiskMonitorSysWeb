@@ -97,13 +97,10 @@
                 </el-row>
                 <el-row :gutter="20">
                   <el-col :span="4">
-                    <div class="desc-header">高危<span style="color: #ff5454">&nbsp;&nbsp;0</span></div>
+                    <div class="desc-header">高危<span style="color: #ff5454">&nbsp;&nbsp;{{item.highNum + item.criticalNum}}</span></div>
                   </el-col>
                   <el-col :span="4">
-                    <div class="desc-header">中危<span style="color: #cfb100">&nbsp;&nbsp;0</span></div>
-                  </el-col>
-                  <el-col :span="4">
-                    <div class="desc-header">低危<span style="color: #c0bcbc">&nbsp;&nbsp;0</span></div>
+                    <div class="desc-header">中危<span style="color: #cfb100">&nbsp;&nbsp;{{item.mediumNum}}</span></div>
                   </el-col>
                 </el-row>
               </div>
@@ -156,13 +153,10 @@
                   <el-col :span="4">
                     <el-col :span="4">
                     </el-col>
-                    <div class="desc-header">高危<span style="color: #ff5454">&nbsp;&nbsp;0</span></div>
+                    <div class="desc-header">高危<span style="color: #ff5454">&nbsp;&nbsp;{{dataList[index + 1].highNum + dataList[index + 1].criticalNum}}</span></div>
                   </el-col>
                   <el-col :span="4">
-                    <div class="desc-header">中危<span style="color: #cfb100">&nbsp;&nbsp;0</span></div>
-                  </el-col>
-                  <el-col :span="4">
-                    <div class="desc-header">低危<span style="color: #c0bcbc">&nbsp;&nbsp;0</span></div>
+                    <div class="desc-header">中危<span style="color: #cfb100">&nbsp;&nbsp;{{dataList[index + 1].mediumNum}}</span></div>
                   </el-col>
                 </el-row>
               </div>

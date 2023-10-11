@@ -14,7 +14,8 @@
                   v-for="item in projectList"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id">
+                  :value="item.id"
+                  @click.native="getProjectName(item.name)" >
               </el-option>
             </el-select>
           </el-form-item>
@@ -62,7 +63,8 @@
                   v-for="item in levelList"
                   :key="item.value"
                   :label="item.code"
-                  :value="item.value">
+                  :value="item.value"
+                  @click.native="getLevelName(item.code)" >
               </el-option>
             </el-select>
           </el-form-item>
@@ -79,7 +81,8 @@
                   v-for="item in toolList"
                   :key="item.value"
                   :label="item.code"
-                  :value="item.value">
+                  :value="item.value"
+                  @click.native="getToolName(item.code)" >
               </el-option>
             </el-select>
           </el-form-item>
@@ -89,7 +92,8 @@
                   v-for="item in statusList"
                   :key="item.value"
                   :label="item.code"
-                  :value="item.value">
+                  :value="item.value"
+                  @click.native="getStatusName(item.code)" >
               </el-option>
             </el-select>
           </el-form-item>
@@ -262,7 +266,7 @@
 import AddOrUpdate from "./hole-add-or-update";
 import {addDynamicRoute} from "@/router";
 import {
-  page, del, exportFile
+  page, exportFile
 } from "@/api/scan/hole";
 import {
   projectList
@@ -286,6 +290,10 @@ export default {
         toolType: '',
         level: '',
       },
+      projectName: '',
+      levelName: '',
+      toolName: '',
+      statusName: '',
       showId: '',
       queryType: '',
       moreQueryFlag: false,
@@ -323,6 +331,18 @@ export default {
     this.getStatusList();
   },
   methods: {
+    getProjectName(name){
+      this.projectName = name;
+    },
+    getLevelName(name){
+      this.levelName = name;
+    },
+    getToolName(name){
+      this.toolName = name;
+    },
+    getStatusName(name){
+      this.statusName = name;
+    },
     // 点击企业名称
     clickName(unitId) {
       if (unitId) {
@@ -417,6 +437,21 @@ export default {
       this.moreQueryFlag = !this.moreQueryFlag;
     },
     exportFile: function () {
+      let fileName = '漏洞资产';
+      let tmpNameList = [];
+      tmpNameList.push(this.projectName);
+      tmpNameList.push(this.q.company);
+      tmpNameList.push(this.q.domain);
+      tmpNameList.push(this.q.subDomain);
+      tmpNameList.push(this.levelName);
+      tmpNameList.push(this.q.url);
+      tmpNameList.push(this.toolName);
+      tmpNameList.push(this.statusName);
+      tmpNameList = tmpNameList.filter(item=>item);
+      if (tmpNameList != null && tmpNameList.length != 0){
+        let tmpName = tmpNameList.join('_');
+        fileName += '(' + tmpName + ')';
+      }
       exportFile(assign({
         page: this.page,
         limit: this.limit,
@@ -427,20 +462,11 @@ export default {
         status: this.q.status,
         toolType: this.q.toolType,
         level: this.q.level,
-        filename: '漏洞资产'
+        filename: fileName
       })).then(({data: res}) => {
-        const objectUrl = URL.createObjectURL(
-            new Blob([res.data], {
-              type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            })
-        )
-        const link = document.createElement('a')
-        // 设置导出的文件名称
-        link.download = `用户资产` + '.xlsx'
-        link.style.display = 'none'
-        link.href = objectUrl
-        link.click()
-        document.body.appendChild(link)
+        if (res.code != 200) {
+          return this.$message.error(res.msg);
+        }
       }).catch(() => {
       });
     },

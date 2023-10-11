@@ -39,3 +39,12 @@ export function exportFile(query) {
     });
 
 }
+
+export function exportFile2(query) {
+    return request({
+        url: "/scan/export/uploadPorts",
+        method: "get",
+        params: query,
+    });
+
+}

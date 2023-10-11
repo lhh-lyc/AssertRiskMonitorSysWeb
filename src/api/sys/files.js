@@ -2,16 +2,17 @@ import request from "@/utils/request"
 
 export function page(query) {
     return request({
-        url: "/scan/security/hole/page",
+        url: "/sys/files/page",
         method: "get",
         params: query,
     });
 }
 
-export function exportFile(query) {
+export function exportFiles(query) {
     return request({
-        url: "/scan/export/uploadHoles",
-        method: "get",
-        params: query,
+        url: "/scan/export/exportFiles",
+        method: "post",
+        data: query,
     });
 }
+

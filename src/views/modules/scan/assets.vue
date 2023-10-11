@@ -14,7 +14,8 @@
                   v-for="item in projectList"
                   :key="item.id"
                   :label="item.name"
-                  :value="item.id">
+                  :value="item.id"
+                  @click.native="getProjectName(item.name)">
               </el-option>
             </el-select>
           </el-form-item>
@@ -298,7 +299,7 @@ import AddOrUpdate from "./assets-add-or-update";
 import deleteBatch from "./assets-delete-list";
 import {addDynamicRoute} from "@/router";
 import {
-  page, exportFile, del
+  page, exportFile, exportFile2, del
 } from "@/api/scan/port";
 import {
   projectList
@@ -321,8 +322,8 @@ export default {
         url: '',
         cms: '',
         title: '',
-        address: '',
       },
+      projectName: '',
       showId: '',
       queryType: '',
       moreQueryFlag: false,
@@ -379,6 +380,9 @@ export default {
     this.getProjectList();
   },
   methods: {
+    getProjectName(name){
+      this.projectName = name;
+    },
     // 点击企业名称
     clickName(unitId) {
       if (unitId) {
@@ -414,7 +418,6 @@ export default {
         url: this.q.url,
         cms: this.q.cms,
         title: this.q.title,
-        address: this.q.address,
       })).then(({data: res}) => {
         if (res.code != 200) {
           this.dataList = [];
@@ -442,7 +445,24 @@ export default {
       this.moreQueryFlag = !this.moreQueryFlag;
     },
     exportFile: function () {
-      exportFile(assign({
+      let fileName = '端口资产';
+      let tmpNameList = [];
+      tmpNameList.push(this.projectName);
+      tmpNameList.push(this.q.company);
+      tmpNameList.push(this.q.parentDomain);
+      tmpNameList.push(this.q.domain);
+      tmpNameList.push(this.q.ip);
+      tmpNameList.push(this.q.port);
+      tmpNameList.push(this.q.serverName);
+      tmpNameList.push(this.q.url);
+      tmpNameList.push(this.q.cms);
+      tmpNameList.push(this.q.title);
+      tmpNameList = tmpNameList.filter(item=>item);
+      if (tmpNameList != null && tmpNameList.length != 0){
+        let tmpName = tmpNameList.join('_');
+        fileName += '(' + tmpName + ')';
+      }
+      exportFile2(assign({
         page: this.page,
         limit: this.limit,
         projectId: this.q.projectId,
@@ -455,7 +475,26 @@ export default {
         url: this.q.url,
         cms: this.q.cms,
         title: this.q.title,
-        address: this.q.address,
+        filename: fileName
+      })).then(({data: res}) => {
+        if (res.code != 200) {
+          return this.$message.error(res.msg);
+        }
+      }).catch(() => {
+      });
+      /*exportFile(assign({
+        page: this.page,
+        limit: this.limit,
+        projectId: this.q.projectId,
+        company: this.q.company,
+        parentDomain: this.q.parentDomain,
+        domain: this.q.domain,
+        ip: this.q.ip,
+        port: this.q.port,
+        serverName: this.q.serverName,
+        url: this.q.url,
+        cms: this.q.cms,
+        title: this.q.title,
         filename: '用户资产'
       })).then(({data: res}) => {
         const objectUrl = URL.createObjectURL(
@@ -471,7 +510,7 @@ export default {
         link.click()
         document.body.appendChild(link)
       }).catch(() => {
-      });
+      });*/
     },
     downLoadModule() {
       let file = "./static/module.xls";

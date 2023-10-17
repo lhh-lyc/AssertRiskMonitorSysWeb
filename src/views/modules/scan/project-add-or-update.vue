@@ -195,31 +195,32 @@ export default {
             if (!valid) {
               return false;
             }
-            if (this.dataForm.portFlag == 0) {
-              this.dataForm.scanPorts = "";
-            }
             this.dataForm.nucleiFlag = 0;
             this.dataForm.nucleiParams = '';
             this.dataForm.afrogFlag = 0;
             this.dataForm.afrogParams = '';
             this.dataForm.xrayFlag = 0;
             this.dataForm.xrayParams = '';
-            let that = this;
-            let toolParams = this.toolParams;
-            this.chooseTool.forEach(function (item){
-              if (item ==0){
-                that.dataForm.nucleiFlag = 1;
-                that.dataForm.nucleiParams = toolParams[0].params;
-              }
-              if (item ==1){
-                that.dataForm.afrogFlag = 1;
-                that.dataForm.afrogParams = toolParams[1].params;
-              }
-              if (item ==2){
-                that.dataForm.xrayFlag = 1;
-                that.dataForm.xrayParams = toolParams[2].params;
-              }
-            })
+            if (this.dataForm.portFlag == 0) {
+              this.dataForm.scanPorts = "";
+            } else {
+              let that = this;
+              let toolParams = this.toolParams;
+              this.chooseTool.forEach(function (item){
+                if (item ==0){
+                  that.dataForm.nucleiFlag = 1;
+                  that.dataForm.nucleiParams = toolParams[0].params;
+                }
+                if (item ==1){
+                  that.dataForm.afrogFlag = 1;
+                  that.dataForm.afrogParams = toolParams[1].params;
+                }
+                if (item ==2){
+                  that.dataForm.xrayFlag = 1;
+                  that.dataForm.xrayParams = toolParams[2].params;
+                }
+              })
+            }
             let url = this.dataForm.unitId ? "/scan/project/update" : "/scan/project/saveProject";
             this.$http
                 .post(url, this.dataForm, {emulateJSON: true})

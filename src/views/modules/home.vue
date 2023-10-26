@@ -67,7 +67,7 @@
         <el-col :span="6" v-for="(item,value,index) in rankData" :key="index" style="padding-top: 20px;">
           <div class="left-chart-box">
             <div class="rank-title-font">{{ rankTitle['title' + (index + 1)] }}</div>
-            <el-row v-for="(it,idx) in rankData['companyRankingList'+(index+1)]" :key="idx" style="margin-top: 10px">
+            <el-row v-for="(it,idx) in rankData['companyRankingList'+(index+1)]" :key="idx" style="margin-top: 10px" v-if="rankData['companyRankingList'+(index+1)]">
               <el-col :span="2">
                 <div :class="idx == 0 ? 'one' : idx == 1 ? 'two' : idx == 2 ? 'three' : 'four'"></div>
               </el-col>
@@ -83,6 +83,9 @@
                   {{ it.value }}
                 </div>
               </el-col>
+            </el-row>
+            <el-row class="no-data" v-if="rankData['companyRankingList'+(index+1)].length == 0">
+                暂无数据
             </el-row>
           </div>
         </el-col>
@@ -206,6 +209,7 @@ export default {
           if (res.code != 200) {
             return this.$message.error(res.msg);
           }
+          let data = [];
           if (!isBlank(res.data)) {
             res.data.forEach(function (item) {
               if (item.type.length > 10) {
@@ -215,8 +219,9 @@ export default {
                 item.sType = item.type;
               }
             })
-            this.rankData['companyRankingList' + i] = res.data
+            data = res.data;
           }
+          this.rankData['companyRankingList' + i] = data
           if (i == 1) {
             this.rankTitle['title' + i] = '企业主域名排行';
           }
@@ -355,6 +360,17 @@ export default {
   background-color: #fff;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
   padding: 20px;
+  position: relative;
+}
+
+.no-data {
+  font-size: 35px;
+  color: #999595;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
 }
 
 .right-chart-box {

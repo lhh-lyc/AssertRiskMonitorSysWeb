@@ -214,6 +214,14 @@
           </template>
         </el-table-column>
         <el-table-column
+            prop="updateTime"
+            label="扫描时间"
+            header-align="center"
+            align="center"
+            width="160"
+            show-overflow-tooltip
+        ></el-table-column>
+        <el-table-column
             :label="$t('handle')"
             fixed="right"
             header-align="center"

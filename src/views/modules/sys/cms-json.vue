@@ -3,7 +3,7 @@
     <div class="mod-sys__user">
       <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
         <el-form-item>
-          <el-input v-model="dataForm.userName" :placeholder="$t('user.username')" clearable></el-input>
+          <el-input v-model="dataForm.cms" placeholder="cms" clearable></el-input>
         </el-form-item>
         <el-form-item>
           <el-button @click="getDataList()">{{ $t('query') }}</el-button>
@@ -17,6 +17,9 @@
         <el-form-item>
           <el-button v-if="$hasPermission('sys:user:export')" type="info" @click="exportCmsJson()">{{ $t('export') }}</el-button>
         </el-form-item>
+        <el-form-item>
+          <el-button v-if="$hasPermission('sys:user:export')" type="info" @click="uploadCmsJson()">{{ $t('uploadModule') }}</el-button>
+        </el-form-item>
       </el-form>
       <el-table
         v-loading="dataListLoading"
@@ -26,6 +29,11 @@
         @sort-change="dataListSortChangeHandle"
         style="width: 100%;">
         <el-table-column type="selection" header-align="center" align="center" width="50"></el-table-column>
+        <el-table-column label="序号" align="center" width="70px">
+          <template slot-scope="scop">
+            {{ showId + scop.$index + 1 }}
+          </template>
+        </el-table-column>
         <el-table-column prop="cms" label="cms" sortable="custom" header-align="center" align="center"></el-table-column>
         <el-table-column prop="method" label="method" header-align="center" align="center"></el-table-column>
         <el-table-column prop="location" label="location" header-align="center" align="center"></el-table-column>
@@ -41,7 +49,10 @@
         :page-sizes="[10, 20, 50, 100]"
         :page-size="limit"
         :total="total"
-        layout="total, sizes, prev, pager, next, jumper">
+        layout="total, sizes, prev, pager, next, jumper"
+        @size-change="pageSizeChangeHandle"
+        @current-change="pageCurrentChangeHandle"
+      >
       </el-pagination>
       <!-- 弹窗, 新增 / 修改 -->
       <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
@@ -69,7 +80,7 @@ export default {
         deleteIsBatchKey: 'id',
       },
       dataForm: {
-        userName: '',
+        cms: '',
         unitId: ''
       },
       dataList: [], // 数据列表
@@ -94,6 +105,7 @@ export default {
     // 获取列表信息
     query() {
       page(assign({
+        cms: this.dataForm.cms,
         page: this.page,
         limit: this.limit,
       })).then(({data: res}) => {
@@ -122,6 +134,43 @@ export default {
         saveAs(str, `finger.json`);
       }).catch(() => {
       });
+    },
+    uploadCmsJson: function () {
+      const _this = this;
+      const fileType = ['json']
+      const inputFile = document.createElement("input")
+      inputFile.type = "file"
+      inputFile.style.display = "none"
+      document.body.appendChild(inputFile)
+      inputFile.click()
+      inputFile.addEventListener("change", function () {
+        const file = inputFile.files[0];
+        var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+        if (!fileType.includes(testmsg)) {
+          _this.$message.warning("上传的文件格式只能是json");
+          document.body.removeChild(inputFile);
+          return false;
+        }
+        const formData = new FormData();
+        formData.append("file", file);
+        _this.$http
+            .post("scan/export/uploadCms", formData, {emulateJSON: true})
+            .then(({data: res}) => {
+              if (res.code != 200) {
+                return _this.$message.error(res.msg);
+              }
+              _this.$message({
+                message: _this.$t("prompt.success"),
+                type: "success",
+                duration: 500,
+                onClose: () => {
+                  _this.getDataList();
+                },
+              });
+            })
+            .catch(() => {
+            });
+      })
     }
   }
 }

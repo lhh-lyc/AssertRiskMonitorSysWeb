@@ -16,7 +16,7 @@
         <el-input v-model="dataForm.name" placeholder="项目名称" maxlength="100"></el-input>
       </el-form-item>
       <el-form-item prop="hosts" label="扫描域名">
-        <textarea style="width: 560px;height: 100px" v-model="dataForm.hosts" placeholder="输入域名，多域名请换行输入"></textarea>
+        <textarea style="width: 560px;height: 100px" v-model="dataForm.hosts" placeholder="输入域名（域名数量请保持在2000个以内），多域名请换行输入"></textarea>
       </el-form-item>
 <!--      <el-form-item prop="subDomainFlag" label="子域名收集">-->
 <!--        <el-checkbox v-model="dataForm.subDomainFlag" :true-label="1" :false-label="0">子域名收集</el-checkbox>-->

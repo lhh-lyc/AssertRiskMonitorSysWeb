@@ -35,6 +35,7 @@ t.prompt.info = '确定进行[{handle}]操作?'
 t.prompt.success = '操作成功'
 t.prompt.failed = '操作失败'
 t.prompt.deleteBatch = '请选择删除项'
+t.prompt.export = '请选择导出项'
 
 t.validate = {}
 t.validate.required = '必填项不能为空'

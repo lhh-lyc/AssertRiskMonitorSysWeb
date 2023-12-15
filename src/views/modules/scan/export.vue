@@ -136,8 +136,8 @@ export default {
               let link = document.createElement('a')
               link.style.display = 'none'
               link.href = url
-              let timestamp = new Date().getTime()
-              link.download = timestamp + '.txt'
+              // let timestamp = new Date().getTime()
+              // link.download = timestamp + '.txt'
               document.body.appendChild(link)
               link.click()
               link.remove()

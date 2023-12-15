@@ -34,6 +34,12 @@
         <el-form-item>
           <el-button type="primary" icon="el-icon-upload2" @click="uploadFiles()">{{ $t('uploadModule') }}</el-button>
         </el-form-item>
+        <el-form-item>
+          <el-button v-if="$hasPermission('sys:user:export')" type="info" @click="exportYaml()">{{ $t('export') }}</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button v-if="$hasPermission('sys:user:delete')" type="danger" @click="deleteHandle()">{{ $t('deleteBatch') }}</el-button>
+        </el-form-item>
       </el-form>
       <el-table
           v-loading="dataListLoading"
@@ -52,7 +58,7 @@
                          align="center"></el-table-column>
         <el-table-column prop="fileType" label="文件类型" header-align="center" align="center"></el-table-column>
         <el-table-column prop="createTime" label="上传时间" header-align="center" align="center"></el-table-column>
-        <el-table-column
+<!--        <el-table-column
             :label="$t('handle')"
             fixed="right"
             header-align="center"
@@ -68,7 +74,7 @@
             </el-button
             >
           </template>
-        </el-table-column>
+        </el-table-column>-->
       </el-table>
       <el-pagination
           :current-page="page"
@@ -154,17 +160,6 @@ export default {
       this.page = 1;
       this.query();
     },
-    download: function () {
-      getCmsJson(assign({})).then(({data: res}) => {
-        if (res.code != 200) {
-          return this.$message.error(res.msg);
-        }
-        let str = new Blob([res.data], {type: 'text/plain;charset=utf-8'});
-        // 注意：这里要手动写上文件的后缀名
-        saveAs(str, `finger.json`);
-      }).catch(() => {
-      });
-    },
     uploadFiles: function () {
       let msg = this.dataForm.toolType == 1 ? "nuclei" : this.dataForm.toolType == 2 ? "afrog" : this.dataForm.toolType == 3 ? "xray" : "全部类型";
       MessageBox.confirm('确定上传'+msg+'漏洞规则？', '提示', {
@@ -223,7 +218,89 @@ export default {
       }).catch(() => {
         // 用户点击了取消按钮，执行取消操作
       });
-    }
+    },
+    exportYaml: function () {
+      if (this.dataListSelections.length <= 0) {
+        return this.$message({
+          message: this.$t('prompt.export'),
+          type: 'warning',
+          duration: 500
+        })
+      }
+      let fileUrlList = [];
+      this.dataListSelections.forEach(function(item){
+        fileUrlList.push(item.fileUrl);
+      })
+      this.$confirm(this.$t('prompt.info', { 'handle': this.$t('export') }), this.$t('prompt.title'), {
+        confirmButtonText: this.$t('confirm'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.$http.post(
+            `/hole/yaml/downYaml`,
+            JSON.stringify(fileUrlList)
+        ).then(({ data: res }) => {
+          if (res.code != 200) {
+            return this.$message.error(res.msg)
+          }
+          let fileList = res.data;
+          fileList.forEach(function(url){
+            let link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = url
+            // let timestamp = new Date().getTime()
+            // link.download = timestamp + '.txt'
+            document.body.appendChild(link)
+            link.click()
+            link.remove()
+          })
+          this.$message({
+            message: this.$t('prompt.success'),
+            type: 'success',
+            duration: 500,
+            onClose: () => {
+              this.query()
+            }
+          })
+        }).catch(() => {})
+      }).catch(() => {})
+    },
+    // 删除
+    deleteHandle () {
+      if (this.dataListSelections.length <= 0) {
+        return this.$message({
+          message: this.$t('prompt.deleteBatch'),
+          type: 'warning',
+          duration: 500
+        })
+      }
+      var ids = [];
+      this.dataListSelections.forEach(function(item){
+        ids.push(item.id);
+      })
+      this.$confirm(this.$t('prompt.info', { 'handle': this.$t('delete') }), this.$t('prompt.title'), {
+        confirmButtonText: this.$t('confirm'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.$http.post(
+            `/hole/yaml/delete`,
+            JSON.stringify(ids)
+        ).then(({ data: res }) => {
+          if (res.code != 200) {
+            return this.$message.error(res.msg)
+          }
+          this.$message({
+            message: this.$t('prompt.success'),
+            type: 'success',
+            duration: 500,
+            onClose: () => {
+              this.query()
+            }
+          })
+        }).catch(() => {})
+      }).catch(() => {})
+    },
   }
 }
 </script>

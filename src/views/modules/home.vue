@@ -57,8 +57,8 @@
                     :key="index"
                     placement="top"
                     :timestamp="activity.createTime">
-                  {{ activity.projectName }}<br>
-                  {{ activity.describe }}
+                  <span style="color: #25a3e8">{{ activity.projectName }}</span><br>
+                  <span style="color: #d30e0eb0">{{ activity.describe }}</span>
                 </el-timeline-item>
               </el-timeline>
             </el-row>

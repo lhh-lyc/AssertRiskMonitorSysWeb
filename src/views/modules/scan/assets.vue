@@ -413,9 +413,11 @@ export default {
     },
     clickQuery() {
       this.page = 1;
-      let ipArr = this.q.ip.split(".");
-      if (ipArr.length<4) {
-        return this.$message.warning("请输入正确格式的ip！");
+      if (!isBlank(this.q.ip)) {
+        let ipArr = this.q.ip.split(".");
+        if (ipArr.length<4) {
+          return this.$message.warning("请输入正确格式的ip！");
+        }
       }
       this.query();
     },

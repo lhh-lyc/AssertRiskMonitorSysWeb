@@ -290,6 +290,8 @@ export default {
     return {
       // 默认属性
       q: {
+        name: '',
+        url: '',
         projectId: '',
         company: '',
         domain: '',

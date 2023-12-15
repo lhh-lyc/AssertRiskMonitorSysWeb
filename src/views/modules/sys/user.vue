@@ -17,6 +17,9 @@
         <el-form-item>
           <el-button v-if="$hasPermission('sys:user:export')" type="info" @click="exportHandle()">{{ $t('export') }}</el-button>
         </el-form-item>
+        <el-form-item>
+          <el-button v-if="$hasPermission('sys:user:delete')" type="warning" @click="resetPwd()">{{ $t('resetPwd') }}</el-button>
+        </el-form-item>
       </el-form>
       <el-table
         v-loading="dataListLoading"

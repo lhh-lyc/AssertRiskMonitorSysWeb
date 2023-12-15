@@ -157,6 +157,40 @@ export default {
         ...this.dataForm
       })
       window.location.href = `${window.SITE_CONFIG['apiURL']}${this.mixinViewModuleOptions.exportURL}?${params}`
-    }
+    },
+
+    // 删除
+    resetPwd () {
+      if ( this.dataListSelections.length <= 0) {
+        return this.$message({
+          message: this.$t('prompt.resetPwd'),
+          type: 'warning',
+          duration: 1000
+        })
+      }
+      var ids = this.dataListSelections.map(item => item["userId"])
+      this.$confirm(this.$t('prompt.info', { 'handle': this.$t('resetPwd') }), this.$t('prompt.title'), {
+        confirmButtonText: this.$t('confirm'),
+        cancelButtonText: this.$t('cancel'),
+        type: 'warning'
+      }).then(() => {
+        this.$http.post(
+            `/sys/user/resetPwd`,
+            JSON.stringify(ids)
+        ).then(({ data: res }) => {
+          if (res.code != 200) {
+            return this.$message.error(res.msg)
+          }
+          this.$message({
+            message: this.$t('prompt.success'),
+            type: 'success',
+            duration: 500,
+            onClose: () => {
+              this.query()
+            }
+          })
+        }).catch(() => {})
+      }).catch(() => {})
+    },
   }
 }

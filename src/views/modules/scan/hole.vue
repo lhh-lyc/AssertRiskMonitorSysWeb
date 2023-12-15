@@ -377,11 +377,13 @@ export default {
         page: this.page,
         limit: this.limit,
         projectId: this.q.projectId,
-        domain: this.q.domain,
-        subDomain: this.q.subDomain,
+        domain: this.q.domain.trim(),
+        subDomain: this.q.subDomain.trim(),
         status: this.q.status,
         toolType: this.q.toolType,
         level: this.q.level,
+        name: this.q.name.trim(),
+        url: this.q.url.trim(),
       })).then(({data: res}) => {
         if (res.code != 200) {
           this.dataList = [];

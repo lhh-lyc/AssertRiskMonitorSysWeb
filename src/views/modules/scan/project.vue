@@ -250,7 +250,7 @@ export default {
       page(assign({
         page: this.page,
         limit: this.limit,
-        name: this.dataForm.name,
+        name: this.dataForm.name.trim(),
         isCompleted: this.dataForm.isCompleted
       })).then(({data: res}) => {
         if (res.code != 200) {

@@ -41,7 +41,7 @@
             ></el-input>
           </el-form-item>
           <el-form-item style="margin-left: 54px;">
-            <el-button icon="el-icon-search" @click="getDataList()">{{
+            <el-button icon="el-icon-search" @click="clickQuery()">{{
                 $t("query")
               }}
             </el-button>
@@ -411,21 +411,29 @@ export default {
       // 动态路由
       addDynamicRoute(routeParams, this.$router);
     },
+    clickQuery() {
+      this.page = 1;
+      let ipArr = this.q.ip.split(".");
+      if (ipArr.length<4) {
+        return this.$message.warning("请输入正确格式的ip！");
+      }
+      this.query();
+    },
     // 获取列表信息
     query() {
       page(assign({
         page: this.page,
         limit: this.limit,
         projectId: this.q.projectId,
-        company: this.q.company,
-        parentDomain: this.q.parentDomain,
-        domain: this.q.domain,
-        ip: this.q.ip,
-        port: this.q.port,
-        serverName: this.q.serverName,
-        url: this.q.url,
-        cms: this.q.cms,
-        title: this.q.title,
+        company: this.q.company.trim(),
+        parentDomain: this.q.parentDomain.trim(),
+        domain: this.q.domain.trim(),
+        ip: this.q.ip.trim(),
+        port: this.q.port.trim(),
+        serverName: this.q.serverName.trim(),
+        url: this.q.url.trim(),
+        cms: this.q.cms.trim(),
+        title: this.q.title.trim(),
       })).then(({data: res}) => {
         if (res.code != 200) {
           this.dataList = [];

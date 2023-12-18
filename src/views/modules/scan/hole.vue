@@ -47,6 +47,9 @@
             </el-button>
           </el-form-item>
           <el-form-item>
+            <el-button v-if="$hasPermission('scan:hole:delete')" type="danger" @click="deleteHandle()">{{ $t('deleteBatch') }}</el-button>
+          </el-form-item>
+          <el-form-item>
             <el-button
                 type="primary"
                 icon="el-icon-download"
@@ -104,8 +107,10 @@
           :data="dataList"
           border
           @selection-change="dataListSelectionChangeHandle"
+          :row-key="getRowKeys"
           style="width: 100%"
       >
+        <el-table-column type="selection" :reserve-selection="true" header-align="center" align="center" width="50"></el-table-column>
         <el-table-column label="序号" align="center" width="70px">
           <template slot-scope="scop">
             {{ showId + scop.$index + 1 }}
@@ -493,6 +498,9 @@ export default {
     dataListSelectionChangeHandle(val) {
       this.dataListSelections = val;
     },
+    getRowKeys(row) {
+      return row.id;
+    },
     // 分页, 每页条数
     pageSizeChangeHandle(val) {
       this.page = 1;
@@ -553,6 +561,7 @@ export default {
     },
     // 删除
     deleteHandle(id) {
+      var ids = id ? [id] : this.dataListSelections.map(item => item["id"])
       this.$confirm(
           this.$t("prompt.info", {handle: this.$t("delete")}),
           this.$t("prompt.title"),
@@ -563,7 +572,7 @@ export default {
           }
       ).then(() => {
             this.$http
-                .post("/scan/security/hole/delete", [id], {emulateJSON: true})
+                .post("/scan/security/hole/delete", ids, {emulateJSON: true})
                 .then(({data: res}) => {
                   if (res.code != 200) {
                     return this.$message.error(res.msg);

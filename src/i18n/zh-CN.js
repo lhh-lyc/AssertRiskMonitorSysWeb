@@ -36,6 +36,7 @@ t.prompt.info = '确定进行[{handle}]操作?'
 t.prompt.success = '操作成功'
 t.prompt.failed = '操作失败'
 t.prompt.deleteBatch = '请选择删除项'
+t.prompt.uploadTool = '请选择上传工具类型'
 t.prompt.export = '请选择导出项'
 t.prompt.resetPwd = '请选择重置密码的用户'
 

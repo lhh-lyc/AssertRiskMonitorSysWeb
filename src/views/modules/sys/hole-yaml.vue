@@ -57,6 +57,19 @@
         <el-table-column prop="fileName" label="文件名" sortable="custom" header-align="center"
                          align="center"></el-table-column>
         <el-table-column prop="fileType" label="文件类型" header-align="center" align="center"></el-table-column>
+        <el-table-column
+            prop="toolType"
+            label="工具类型"
+            header-align="center"
+            align="center"
+            show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <div>
+              {{ scope.row.toolType == 1 ? 'nuclei' : scope.row.toolType == 2 ? 'afrog' : scope.row.toolType == 3 ? 'xray' : '-' }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="上传时间" header-align="center" align="center"></el-table-column>
 <!--        <el-table-column
             :label="$t('handle')"
@@ -93,13 +106,11 @@
 </template>
 
 <script>
-import {saveAs} from 'file-saver';
 import mixinViewModule from '@/mixins/view-module'
-import { MessageBox } from 'element-ui';
+import {MessageBox} from 'element-ui';
 import AddOrUpdate from './cms-json-add-or-update'
-import {
-  page, getCmsJson
-} from "@/api/sys/hole-yaml";
+import {isBlank} from '@/utils/common.js'
+import {page} from "@/api/sys/hole-yaml";
 import {assign} from "_lodash@4.17.21@lodash";
 
 export default {
@@ -161,7 +172,14 @@ export default {
       this.query();
     },
     uploadFiles: function () {
-      let msg = this.dataForm.toolType == 1 ? "nuclei" : this.dataForm.toolType == 2 ? "afrog" : this.dataForm.toolType == 3 ? "xray" : "全部类型";
+      if (isBlank(this.dataForm.toolType)) {
+        return this.$message({
+          message: this.$t('prompt.uploadTool'),
+          type: 'warning',
+          duration: 1000
+        })
+      }
+      let msg = this.dataForm.toolType == 1 ? "nuclei" : this.dataForm.toolType == 2 ? "afrog" : "xray";
       MessageBox.confirm('确定上传'+msg+'漏洞规则？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -185,12 +203,14 @@ export default {
           const formData = new FormData();
           formData.append("toolType", _this.dataForm.toolType);
           for (let i = 0; i < files.length; i++) {
+            var relativePath = files[i].webkitRelativePath;
             let testMsg = files[i].name.substring(files[i].name.lastIndexOf('.') + 1)
             if (!fileType.includes(testMsg)) {
               fileError = true;
               break;
             }
             formData.append("files", files[i]);
+            formData.append("paths", relativePath);
           }
           if (fileError) {
             _this.$message.warning("上传的文件格式只能是yaml");

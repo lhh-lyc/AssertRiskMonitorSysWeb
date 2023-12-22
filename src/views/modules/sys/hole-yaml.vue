@@ -54,8 +54,8 @@
             {{ showId + scop.$index + 1 }}
           </template>
         </el-table-column>
-        <el-table-column prop="fileName" label="文件名" sortable="custom" header-align="center"
-                         align="center"></el-table-column>
+        <el-table-column prop="fileName" label="文件名" sortable="custom" header-align="center" align="center"></el-table-column>
+        <el-table-column prop="filePath" label="文件目录" sortable="custom" header-align="center" align="center"></el-table-column>
         <el-table-column prop="fileType" label="文件类型" header-align="center" align="center"></el-table-column>
         <el-table-column
             prop="toolType"
@@ -218,7 +218,7 @@ export default {
             return false;
           }
           _this.$http
-              .post("scan/export/uploadFiles", formData, {emulateJSON: true})
+              .post("hole/yaml/uploadFiles", formData, {emulateJSON: true})
               .then(({data: res}) => {
                 if (res.code != 200) {
                   return _this.$message.error(res.msg);

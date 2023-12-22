@@ -73,7 +73,7 @@
                     <div class="desc-header">资产总数</div>
                   </el-col>
                   <el-col :span="4">
-                    <div class="desc-header">已扫描资产</div>
+                    <div class="desc-header">url总数</div>
                   </el-col>
                   <el-col :span="8">
                     <div class="desc-header">创建时间</div>
@@ -89,7 +89,7 @@
                     <div class="desc-content">{{ item.portNum }}</div>
                   </el-col>
                   <el-col :span="4">
-                    <div class="desc-content">{{ item.portNum }}</div>
+                    <div class="desc-content">{{ item.urlNum }}</div>
                   </el-col>
                   <el-col :span="8">
                     <div class="desc-content">{{ item.createTime }}</div>
@@ -127,7 +127,7 @@
                     <div class="desc-header">资产总数</div>
                   </el-col>
                   <el-col :span="4">
-                    <div class="desc-header">已扫描资产</div>
+                    <div class="desc-header">url总数</div>
                   </el-col>
                   <el-col :span="8">
                     <div class="desc-header">创建时间</div>
@@ -143,7 +143,7 @@
                     <div class="desc-content">{{ dataList[index + 1].portNum }}</div>
                   </el-col>
                   <el-col :span="4">
-                    <div class="desc-content">{{ dataList[index + 1].portNum }}</div>
+                    <div class="desc-content">{{ dataList[index + 1].urlNum }}</div>
                   </el-col>
                   <el-col :span="8">
                     <div class="desc-content">{{ dataList[index + 1].createTime }}</div>

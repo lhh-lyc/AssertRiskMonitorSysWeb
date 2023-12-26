@@ -8,9 +8,9 @@ export function page(query) {
     });
 }
 
-export function getCmsJson(query) {
+export function folderList(query) {
     return request({
-        url: "/cms/json/getCmsJson",
+        url: "/hole/yaml/folder/list",
         method: "get",
         params: query,
     });

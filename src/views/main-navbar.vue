@@ -167,4 +167,4 @@ export default {
   left: 110px;
   font-weight: bold;
 }
-</style>></style>
+</style>

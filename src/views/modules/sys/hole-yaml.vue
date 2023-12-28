@@ -412,10 +412,10 @@ export default {
   position: relative;
   background: transparent;
   margin-top: 3px;
-  height: 39px;
+  height: 30px;
 }
 ::v-deep .el-tree-node__label {
-  font-size: 20px;
+  font-size: 18px;
 }
 .custom-tree-node {
   width: 100%;

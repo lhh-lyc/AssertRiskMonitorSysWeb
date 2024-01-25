@@ -5,7 +5,7 @@
           label-width="67px"
           :inline="true"
           :model="dataForm"
-          @keyup.enter.native="getDataList()"
+          @keyup.enter.native="initDataList()"
       >
         <el-row>
           <el-form-item prop="roleIdList" label="项目">
@@ -384,8 +384,7 @@ export default {
         this.q.port = arr[1];
       }
     }
-    this.getDataList();
-    this.getProjectList();
+    this.initDataList();
   },
   methods: {
     getProjectName(name){
@@ -456,6 +455,10 @@ export default {
           return this.$message.error(res.msg);
         }
         this.projectList = res.data || [];
+        if (this.projectList != null && this.projectList.length != 0) {
+          this.q.projectId = this.projectList[0].id
+        }
+        this.query();
       }).catch(() => {
       });
     },
@@ -592,6 +595,10 @@ export default {
     getDataList: function () {
       this.page = 1;
       this.query();
+    },
+    initDataList: function () {
+      this.page = 1;
+      this.getProjectList();
     },
     // 新增 / 修改
     addOrUpdateHandle(id) {

@@ -252,7 +252,7 @@
       </el-table>
       <el-pagination
           :current-page="page"
-          :page-sizes="[10, 20, 50, 100]"
+          :page-sizes="[10, 20, 50, 100, 1000, 10000]"
           :page-size="limit"
           :total="total"
           layout="total, sizes, prev, pager, next, jumper"

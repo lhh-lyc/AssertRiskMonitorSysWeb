@@ -455,7 +455,7 @@ export default {
           return this.$message.error(res.msg);
         }
         this.projectList = res.data || [];
-        if (this.projectList != null && this.projectList.length != 0) {
+        if (this.projectList != null && this.projectList.length != 0 && isBlank(this.q.projectId)) {
           this.q.projectId = this.projectList[0].id
         }
         this.query();

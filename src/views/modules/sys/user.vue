@@ -72,7 +72,7 @@ export default {
       mixinViewModuleOptions: {
         getDataListURL: '/sys/user/page',
         getDataListIsPage: true,
-        deleteURL: '/sys/user/delete',
+        deleteURL: '/sys/user/deleteBatch',
         deleteIsBatch: true,
         exportURL: '/sys/user/exportExcel',
         deleteIsBatchKey: 'userId',
